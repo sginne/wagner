@@ -16,7 +16,12 @@ data class Comic(
     val image: String,
     val publishedDate: String? = null,
     val facebookPage: String? = null,
-    val id: String? = null
+    val id: String? = null,
+    val previousId: String? = null,
+    val previousTitle: String? = null,
+    val nextId: String? = null,
+    val nextTitle: String? = null
+
 ) {
     val proxiedImage: String
         get() = "https://norsula.com/wp-json/custom/v1/proxy/?url=${URLEncoder.encode(image, StandardCharsets.UTF_8.toString())}"

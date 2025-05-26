@@ -26,15 +26,27 @@ import androidx.compose.foundation.clickable
 import coil.compose.rememberAsyncImagePainter
 import com.viivi.wagner.model.Comic
 import com.viivi.wagner.model.fetchComics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
+
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
+
+
+
 
 @Composable
 fun HomePage(selectedTab: (Int) -> Unit) {
     var comics by remember { mutableStateOf<List<Comic>?>(null) }
+    var currentComic by remember { mutableStateOf<Comic?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
         try {
             comics = fetchComics()
+            currentComic = comics?.firstOrNull()
         } catch (e: Exception) {
             error = "Помилка завантаження: ${e.localizedMessage}"
         }
@@ -42,24 +54,24 @@ fun HomePage(selectedTab: (Int) -> Unit) {
 
     when {
         comics == null && error == null -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(Modifier.fillMaxSize(), Alignment.Center) {
                 Text("Завантаження коміксу...")
             }
         }
         error != null -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(Modifier.fillMaxSize(), Alignment.Center) {
                 Text(error ?: "Невідома помилка")
             }
         }
         comics.isNullOrEmpty() -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(Modifier.fillMaxSize(), Alignment.Center) {
                 Text("Немає коміксів")
             }
         }
         else -> {
-            val comic = comics!!.first()
+            val comic = currentComic!!
             Column(
-                modifier = Modifier
+                Modifier
                     .fillMaxSize()
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
@@ -74,10 +86,44 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                         .height(300.dp),
                     contentScale = ContentScale.Fit
                 )
-                Spacer(Modifier.height(8.dp))
-                Text(text = comic.title, style = MaterialTheme.typography.titleLarge)
-                comic.publishedDate?.let {
-                    Text("Опубліковано: $it", style = MaterialTheme.typography.bodySmall)
+
+                Spacer(Modifier.height(1.dp))
+
+                Text(
+                    text = comic.title,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Italic
+                    ),
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    textAlign = TextAlign.Center
+                )
+                comic.publishedDate?.let { dateStr ->
+                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val date = LocalDate.parse(dateStr, formatter)
+
+                    val day = date.dayOfMonth
+                    val month = when (date.monthValue) {
+                        1 -> "січня"
+                        2 -> "лютого"
+                        3 -> "березня"
+                        4 -> "квітня"
+                        5 -> "травня"
+                        6 -> "червня"
+                        7 -> "липня"
+                        8 -> "серпня"
+                        9 -> "вересня"
+                        10 -> "жовтня"
+                        11 -> "листопада"
+                        12 -> "грудня"
+                        else -> ""
+                    }
+                    val year = date.year
+
+                    Text(
+                        text = "переклад від $day $month $year",
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
 
                 comic.id?.let { id ->
@@ -94,14 +140,26 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                     )
                 }
 
+                Spacer(Modifier.height(12.dp))
 
-                val totalPages = comics!!.size
-                val currentPage = 1 // або зробити змінну, якщо хочеш гортати
-
-                Text(
-                    text = "Сторінка $currentPage / $totalPages",
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    if (comic.previousId != null) {
+                        TextButton(onClick = {
+                            val newComic = comics!!.find { it.id == comic.previousId }
+                            if (newComic != null) currentComic = newComic
+                        }) {
+                            Text("${comic.previousTitle}")
+                        }
+                    }
+                    if (comic.nextId != null) {
+                        TextButton(onClick = {
+                            val newComic = comics!!.find { it.id == comic.nextId }
+                            if (newComic != null) currentComic = newComic
+                        }) {
+                            Text("${comic.nextTitle}")
+                        }
+                    }
+                }
 
                 Row(
                     modifier = Modifier
@@ -120,6 +178,7 @@ fun HomePage(selectedTab: (Int) -> Unit) {
         }
     }
 }
+
 
 
 @Composable

@@ -9,6 +9,16 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontWeight
+import com.viivi.wagner.R
+import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
+
+
+
+
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -32,6 +42,29 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+val IrinaFontFamily = FontFamily(
+    Font(R.font.irinactt, FontWeight.Normal)
+)
+
+private val CustomTypography = Typography(
+    displayLarge = TextStyle(fontFamily = IrinaFontFamily),
+    displayMedium = TextStyle(fontFamily = IrinaFontFamily),
+    displaySmall = TextStyle(fontFamily = IrinaFontFamily),
+    headlineLarge = TextStyle(fontFamily = IrinaFontFamily),
+    headlineMedium = TextStyle(fontFamily = IrinaFontFamily),
+    headlineSmall = TextStyle(fontFamily = IrinaFontFamily),
+    titleLarge = TextStyle(fontFamily = IrinaFontFamily),
+    titleMedium = TextStyle(fontFamily = IrinaFontFamily),
+    titleSmall = TextStyle(fontFamily = IrinaFontFamily),
+    bodyLarge = TextStyle(fontFamily = IrinaFontFamily),
+    bodyMedium = TextStyle(fontFamily = IrinaFontFamily),
+    bodySmall = TextStyle(fontFamily = IrinaFontFamily),
+    labelLarge = TextStyle(fontFamily = IrinaFontFamily),
+    labelMedium = TextStyle(fontFamily = IrinaFontFamily),
+    labelSmall = TextStyle(fontFamily = IrinaFontFamily)
+)
+
+
 @Composable
 fun WagnerTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -51,7 +84,7 @@ fun WagnerTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = CustomTypography,
         content = content
     )
 }
