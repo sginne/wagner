@@ -14,9 +14,9 @@ import java.nio.charset.StandardCharsets
 data class Comic(
     val title: String,
     val image: String,
-    val description: String? = null,
-    val author: String? = null,
-    val publishedDate: String? = null
+    val publishedDate: String? = null,
+    val facebookPage: String? = null,
+    val id: String? = null
 ) {
     val proxiedImage: String
         get() = "https://norsula.com/wp-json/custom/v1/proxy/?url=${URLEncoder.encode(image, StandardCharsets.UTF_8.toString())}"
