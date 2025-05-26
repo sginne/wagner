@@ -30,6 +30,10 @@ import androidx.compose.ui.res.painterResource
 import android.util.Log
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+
+
 
 @Serializable
 data class Comic(val title: String, val image: String) {
@@ -76,41 +80,45 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ComicList(modifier: Modifier = Modifier) {
-    var comic by remember { mutableStateOf<Comic?>(null) }
-    val scope = rememberCoroutineScope()
-    if (comic == null) {
-        Log.d("ComicList", "No comic to display")
-    }
+    var comics by remember { mutableStateOf<List<Comic>>(emptyList()) }
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(Unit) {
-        val comics = fetchComics()
+        comics = fetchComics()
         Log.d("ComicList", "Fetched comics count: ${comics.size}")
-        comic = comics.firstOrNull()
     }
 
-    comic?.let {
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = it.image,
-                    onError = { error ->
-                        Log.e("ImageLoad", "Failed to load image: ${error.result.throwable}")
-                    },
-                    onSuccess = { Log.d("ImageLoad", "Image loaded successfully") }
-                ),
-                contentDescription = it.title,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                contentScale = ContentScale.FillWidth
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(text = it.title)
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(comics) { comic ->
+            Column {
+                Row(
+                    modifier = Modifier
+                        .horizontalScroll(scrollState)
+                        .fillMaxWidth()
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(
+                            model = comic.image,
+                            onError = { error ->
+                                Log.e("ImageLoad", "Failed to load image: ${error.result.throwable}")
+                            },
+                            onSuccess = { Log.d("ImageLoad", "Image loaded successfully") }
+                        ),
+                        contentDescription = comic.title,
+                        modifier = Modifier
+                            .height(200.dp)
+                            .widthIn(min = 300.dp), // set min width to allow horizontal scroll
+                        contentScale = ContentScale.Fit
+                    )
+                }
+                Spacer(Modifier.height(8.dp))
+                Text(text = comic.title)
+            }
         }
     }
 }
