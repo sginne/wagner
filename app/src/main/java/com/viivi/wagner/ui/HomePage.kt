@@ -6,6 +6,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,7 +17,7 @@ import com.viivi.wagner.model.Comic
 import com.viivi.wagner.model.fetchComics
 
 @Composable
-fun HomePage() {
+fun HomePage(selectedTab: (Int) -> Unit) {
     var comics by remember { mutableStateOf<List<Comic>?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
 
@@ -64,10 +65,33 @@ fun HomePage() {
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(text = comic.title, style = MaterialTheme.typography.titleLarge)
+
+                val totalPages = comics!!.size
+                val currentPage = 1 // або зробити змінну, якщо хочеш гортати
+
+                Text(
+                    text = "Сторінка $currentPage / $totalPages",
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    TextButton(onClick = { selectedTab(1) }) {
+                        Text("Пошук")
+                    }
+                    TextButton(onClick = { selectedTab(2) }) {
+                        Text("Інфо")
+                    }
+                }
             }
         }
     }
 }
+
 
 @Composable
 fun SearchPage() {
