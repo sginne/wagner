@@ -24,8 +24,8 @@ import androidx.compose.foundation.clickable
 
 
 import coil.compose.rememberAsyncImagePainter
-import com.viivi.wagner.model.Comic
-import com.viivi.wagner.model.fetchComics
+
+import com.viivi.wagner.model.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -42,10 +42,12 @@ fun HomePage(selectedTab: (Int) -> Unit) {
     var comics by remember { mutableStateOf<List<Comic>?>(null) }
     var currentComic by remember { mutableStateOf<Comic?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
+
 
     LaunchedEffect(Unit) {
         try {
-            comics = fetchComics()
+            comics = fetchComicsWithCache(context)
             currentComic = comics?.firstOrNull()
         } catch (e: Exception) {
             error = "Помилка завантаження: ${e.localizedMessage}"
@@ -70,6 +72,39 @@ fun HomePage(selectedTab: (Int) -> Unit) {
         }
         else -> {
             val comic = currentComic!!
+            Column {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Dev Panel", fontWeight = FontWeight.Bold)
+                    var refreshTrigger by remember { mutableStateOf(0) }
+
+                    TextButton(onClick = {
+                        refreshTrigger++
+                    }) {
+                        Text("Оновити")
+                    }
+
+                    LaunchedEffect(refreshTrigger) {
+                        try {
+                            comics = fetchComicsWithCache(context)
+                            currentComic = comics?.firstOrNull()
+                            error = null
+                        } catch (e: Exception) {
+                            error = "Помилка оновлення: ${e.localizedMessage}"
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(8.dp))
+
+                // Далі твій існуючий код з картинкою, текстом і тд
+            }
+
             Column(
                 Modifier
                     .fillMaxSize()
