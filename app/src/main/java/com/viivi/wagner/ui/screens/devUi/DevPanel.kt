@@ -30,6 +30,8 @@ import kotlinx.coroutines.withContext
 import java.nio.file.Files
 import java.nio.file.Path
 import okio.Path.Companion.toOkioPath
+import com.viivi.wagner.AppConfig
+
 
 fun calculateCoilCacheItems(context: Context): Int {
     val diskCache = context.imageLoader.diskCache ?: return 0
@@ -82,6 +84,10 @@ fun DevPanel() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
+        Button(onClick = { AppConfig.debugMode.value = false }) {
+            Text("Вимкнути debugMode")
+        }
         Text("Крута панель розробника", fontWeight = FontWeight.Bold)
         Text("Кеш: ${cacheSize / 1024} КБ")
         Text("Елементів кешу: $cacheItems")
@@ -114,6 +120,7 @@ fun DevPanel() {
             }) {
                 Text("Оновити")
             }
+
         }
     }
 }

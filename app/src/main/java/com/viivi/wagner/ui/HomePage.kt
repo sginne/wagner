@@ -50,6 +50,8 @@ fun HomePage(selectedTab: (Int) -> Unit) {
     var currentComic by remember { mutableStateOf<Comic?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
+    var debugMode = mutableStateOf(true) // в AppConfig
+
 
     LaunchedEffect(Unit) {
         try {
@@ -115,7 +117,7 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                     },
                 verticalArrangement = Arrangement.Top
             ){
-                if (AppConfig.debugMode) {
+                if (AppConfig.debugMode.value) {
                     DevPanel()
                     Spacer(Modifier.height(2.dp))
                 }
@@ -203,7 +205,7 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                 Spacer(Modifier.height(2.dp))
                 val comicsSnapshot = comics
                 val currentComicSnapshot = currentComic
-                if (AppConfig.debugMode && comicsSnapshot != null && currentComicSnapshot != null) {
+                if (AppConfig.debugMode.value && comicsSnapshot != null && currentComicSnapshot != null) {
                     val position = comicsSnapshot.indexOfFirst { it.id == currentComicSnapshot.id }.takeIf { it >= 0 }?.let { comicsSnapshot.size - it } ?: "?"
                     val total = comicsSnapshot.size
                     Text(
