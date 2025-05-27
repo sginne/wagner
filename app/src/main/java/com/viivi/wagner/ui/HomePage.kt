@@ -37,6 +37,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import com.viivi.wagner.ui.screens.devUi.DevPanel
 import com.viivi.wagner.AppConfig
+import android.app.Activity
+
 
 
 
@@ -50,6 +52,7 @@ fun HomePage(selectedTab: (Int) -> Unit) {
     var currentComic by remember { mutableStateOf<Comic?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
+    var clicks by remember { mutableStateOf(AppConfig.comicClickCount.value) }
     var debugMode = mutableStateOf(true) // в AppConfig
 
 
@@ -128,7 +131,14 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                     contentDescription = comic.title,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp),
+                        .height(300.dp)
+                        .clickable {
+                            clicks++
+                            AppConfig.comicClickCount.value = clicks
+                            if (clicks >= 7) {
+                                AppConfig.debugMode.value = true
+                            }
+                        },
                     contentScale = ContentScale.Fit
                 )
 

@@ -85,8 +85,13 @@ fun DevPanel() {
         verticalArrangement = Arrangement.Center
     ) {
 
-        Button(onClick = { AppConfig.debugMode.value = false }) {
+        Button(onClick = {
+            AppConfig.debugMode.value = false
+            AppConfig.comicClickCount.value = 0
+        })
+        {
             Text("Вимкнути debugMode")
+
         }
         Text("Крута панель розробника", fontWeight = FontWeight.Bold)
         Text("Кеш: ${cacheSize / 1024} КБ")
