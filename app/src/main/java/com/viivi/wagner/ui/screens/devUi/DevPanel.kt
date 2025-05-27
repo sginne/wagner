@@ -103,6 +103,17 @@ fun DevPanel() {
             }) {
                 Text("Почистити кеш")
             }
+            Button(onClick = {
+                scope.launch(Dispatchers.IO) {
+                    val (size, count) = calculateCacheStats()
+                    val coilCount = calculateCoilCacheItems(context)
+                    cacheSize = size
+                    cacheItems = count
+                    coilCacheItems = coilCount
+                }
+            }) {
+                Text("Оновити")
+            }
         }
     }
 }
