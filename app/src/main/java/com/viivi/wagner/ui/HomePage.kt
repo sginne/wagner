@@ -168,7 +168,6 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
-
                 comic.id?.let { id ->
                     Text(
                         text = "Переглянути на сайті",
@@ -180,7 +179,26 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                                 context.startActivity(intent)
                             }
                     )
+
+                    Spacer(Modifier.height(4.dp))
+
+                    Text(
+                        text = "Поділитися",
+                        style = MaterialTheme.typography.bodyMedium.copy(color = Color.Blue),
+                        modifier = Modifier
+                            .clickable {
+                                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                    type = "text/plain"
+                                    putExtra(Intent.EXTRA_SUBJECT, comic.title)
+                                    putExtra(Intent.EXTRA_TEXT, "Подивись цей комікс: ${comic.title}\nhttps://norsula.com/$id")
+                                }
+                                context.startActivity(Intent.createChooser(shareIntent, "Поділитися через"))
+                            }
+                    )
                 }
+
+
+
 
                 Spacer(Modifier.height(2.dp))
                 val comicsSnapshot = comics
