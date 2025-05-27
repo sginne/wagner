@@ -102,15 +102,15 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                     .padding(16.dp)
                     .pointerInput(currentComic, comics) {
                         detectHorizontalDragGestures { change, dragAmount ->
-                            if (dragAmount > 0) { // swipe right - попередній комікс
-                                currentComic?.previousId?.let { prevId ->
-                                    comics?.find { it.id == prevId }?.let {
+                            if (dragAmount > 0) { // swipe right - NEXT comic
+                                currentComic?.nextId?.let { nextId ->
+                                    comics?.find { it.id == nextId }?.let {
                                         currentComic = it
                                     }
                                 }
-                            } else if (dragAmount < 0) { // swipe left - наступний комікс
-                                currentComic?.nextId?.let { nextId ->
-                                    comics?.find { it.id == nextId }?.let {
+                            } else if (dragAmount < 0) { // swipe left - PREVIOUS comic
+                                currentComic?.previousId?.let { prevId ->
+                                    comics?.find { it.id == prevId }?.let {
                                         currentComic = it
                                     }
                                 }
