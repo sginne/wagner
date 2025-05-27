@@ -27,7 +27,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import kotlinx.coroutines.withContext
+import java.nio.file.Files
+import java.nio.file.Path
+import okio.Path.Companion.toOkioPath
 
+fun calculateCoilCacheItems(context: Context): Int {
+    val diskCache = context.imageLoader.diskCache ?: return 0
+    val dir = diskCache.directory ?: return 0
+    val file = File(dir.toString())
+    return file.listFiles()?.size ?: 0
+}
 
 
 
@@ -42,17 +51,25 @@ fun DevPanel() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var cacheSize by remember { mutableStateOf(0L) }
+    var cacheItems by remember { mutableStateOf(0) }
+    var coilCacheItems by remember { mutableStateOf(0) }
 
-    fun calculateCacheSize(): Long {
+
+
+    fun calculateCacheStats(): Pair<Long, Int> {
         val cacheDir = File(context.filesDir, "comics_cache")
-        return cacheDir.walkTopDown()
-            .filter { it.isFile }
-            .map { it.length() }
-            .sum()
+        val files = cacheDir.walkTopDown().filter { it.isFile }.toList()
+        val size = files.sumOf { it.length() }
+        val count = files.size
+        return size to count
     }
 
     LaunchedEffect(Unit) {
-        cacheSize = withContext(Dispatchers.IO) { calculateCacheSize() }
+        val (size, count) = withContext(Dispatchers.IO) { calculateCacheStats() }
+        val coilCount = withContext(Dispatchers.IO) { calculateCoilCacheItems(context) }
+        coilCacheItems = coilCount
+        cacheSize = size
+        cacheItems = count
     }
 
     Column(
@@ -66,8 +83,9 @@ fun DevPanel() {
         verticalArrangement = Arrangement.Center
     ) {
         Text("Крута панель розробника", fontWeight = FontWeight.Bold)
-
         Text("Кеш: ${cacheSize / 1024} КБ")
+        Text("Елементів кешу: $cacheItems")
+        Text("Кеш Coil: $coilCacheItems елементів")
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -76,7 +94,11 @@ fun DevPanel() {
             Button(onClick = {
                 scope.launch(Dispatchers.IO) {
                     clearComicCache(context)
-                    cacheSize = calculateCacheSize()
+                    val (size, count) = calculateCacheStats()
+                    val coilCount = calculateCoilCacheItems(context)
+                    cacheSize = size
+                    cacheItems = count
+                    coilCacheItems = coilCount
                 }
             }) {
                 Text("Почистити кеш")
@@ -84,3 +106,4 @@ fun DevPanel() {
         }
     }
 }
+
