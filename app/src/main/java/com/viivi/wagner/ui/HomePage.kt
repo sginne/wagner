@@ -29,6 +29,9 @@ import com.viivi.wagner.model.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.ui.input.pointer.pointerInput
+
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -91,9 +94,27 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .pointerInput(currentComic, comics) {
+                        detectHorizontalDragGestures { change, dragAmount ->
+                            if (dragAmount > 0) { // swipe right - попередній комікс
+                                currentComic?.previousId?.let { prevId ->
+                                    comics?.find { it.id == prevId }?.let {
+                                        currentComic = it
+                                    }
+                                }
+                            } else if (dragAmount < 0) { // swipe left - наступний комікс
+                                currentComic?.nextId?.let { nextId ->
+                                    comics?.find { it.id == nextId }?.let {
+                                        currentComic = it
+                                    }
+                                }
+                            }
+                            change.consume()
+                        }
+                    },
                 verticalArrangement = Arrangement.Top
-            ) {
+            ){
                 if (AppConfig.debugMode) {
                     DevPanel()
                     Spacer(Modifier.height(2.dp))
@@ -161,8 +182,18 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                     )
                 }
 
-                Spacer(Modifier.height(12.dp))
-
+                Spacer(Modifier.height(2.dp))
+                val comicsSnapshot = comics
+                val currentComicSnapshot = currentComic
+                if (AppConfig.debugMode && comicsSnapshot != null && currentComicSnapshot != null) {
+                    val position = comicsSnapshot.indexOfFirst { it.id == currentComicSnapshot.id }.takeIf { it >= 0 }?.let { comicsSnapshot.size - it } ?: "?"
+                    val total = comicsSnapshot.size
+                    Text(
+                        text = "$position from $total",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    Spacer(Modifier.height(2.dp))
+                }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     if (comic.previousId != null) {
                         TextButton(onClick = {
