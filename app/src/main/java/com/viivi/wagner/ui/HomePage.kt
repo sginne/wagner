@@ -32,6 +32,10 @@ import androidx.compose.ui.text.style.TextAlign
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import com.viivi.wagner.ui.screens.devUi.DevPanel
+import com.viivi.wagner.AppConfig
+
+
 
 
 
@@ -43,7 +47,6 @@ fun HomePage(selectedTab: (Int) -> Unit) {
     var currentComic by remember { mutableStateOf<Comic?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
-
 
     LaunchedEffect(Unit) {
         try {
@@ -72,46 +75,30 @@ fun HomePage(selectedTab: (Int) -> Unit) {
         }
         else -> {
             val comic = currentComic!!
-            Column {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Dev Panel", fontWeight = FontWeight.Bold)
-                    var refreshTrigger by remember { mutableStateOf(0) }
+            var refreshTrigger by remember { mutableStateOf(0) }
 
-                    TextButton(onClick = {
-                        refreshTrigger++
-                    }) {
-                        Text("Оновити")
-                    }
-
-                    LaunchedEffect(refreshTrigger) {
-                        try {
-                            comics = fetchComicsWithCache(context)
-                            currentComic = comics?.firstOrNull()
-                            error = null
-                        } catch (e: Exception) {
-                            error = "Помилка оновлення: ${e.localizedMessage}"
-                        }
-                    }
+            LaunchedEffect(refreshTrigger) {
+                try {
+                    comics = fetchComicsWithCache(context)
+                    currentComic = comics?.firstOrNull()
+                    error = null
+                } catch (e: Exception) {
+                    error = "Помилка оновлення: ${e.localizedMessage}"
                 }
-
-                Spacer(Modifier.height(8.dp))
-
-                // Далі твій існуючий код з картинкою, текстом і тд
             }
 
             Column(
-                Modifier
+                modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.Top
             ) {
+                if (AppConfig.debugMode) {
+                    DevPanel()
+                    Spacer(Modifier.height(2.dp))
+                }
+
                 val painter = rememberAsyncImagePainter(comic.image)
                 Image(
                     painter = painter,
@@ -133,10 +120,10 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     textAlign = TextAlign.Center
                 )
+
                 comic.publishedDate?.let { dateStr ->
                     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                     val date = LocalDate.parse(dateStr, formatter)
-
                     val day = date.dayOfMonth
                     val month = when (date.monthValue) {
                         1 -> "січня"
@@ -162,7 +149,6 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                 }
 
                 comic.id?.let { id ->
-                    val context = LocalContext.current
                     Text(
                         text = "Переглянути на сайті",
                         style = MaterialTheme.typography.bodyMedium.copy(color = Color.Blue),
@@ -213,6 +199,7 @@ fun HomePage(selectedTab: (Int) -> Unit) {
         }
     }
 }
+
 
 
 
