@@ -45,7 +45,8 @@ import com.viivi.wagner.AppConfig
 
 @Composable
 fun HomePage(selectedTab: (Int) -> Unit,
-             onComicsLoaded: (List<Comic>)-> Unit) {
+             onComicsLoaded: (List<Comic>)-> Unit,
+             initialComicId: String? = null) {
     var comics by remember { mutableStateOf<List<Comic>?>(null) }
     var currentComic by remember { mutableStateOf<Comic?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
@@ -59,7 +60,11 @@ fun HomePage(selectedTab: (Int) -> Unit,
             val loadedComics = fetchComicsWithCache(context)
             onComicsLoaded(loadedComics) // виклик callback, передаємо список коміксів в MainScreen
             comics = loadedComics
-            currentComic = comics?.firstOrNull()
+            currentComic = if (initialComicId != null) {
+                comics?.find { it.id == initialComicId } ?: comics?.firstOrNull()
+            } else {
+                comics?.firstOrNull()
+            }
         } catch (e: Exception) {
             error = "Помилка завантаження: ${e.localizedMessage}"
         }

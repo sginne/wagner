@@ -28,10 +28,20 @@ import com.viivi.wagner.ui.screens.InfoPage
 
 
 
+
 @Composable
 fun MainScreen() {
     var selectedTab by remember { mutableStateOf(0) }
     var comics by remember { mutableStateOf<List<Comic>?>(null) }
+
+    var selectedComicId by remember { mutableStateOf<String?>(null) }
+
+    val navigateToHomePageWithComicId = remember {
+        { id: String ->
+            selectedComicId = id
+            selectedTab = 0
+        }
+    }
 
     // Логіку завантаження коміксів можна винести сюди, або в HomePage і підняти стан через callback
 
@@ -46,7 +56,7 @@ fun MainScreen() {
                 )
                 1 -> SearchPage(
                     comics = comics,
-                    onSelect = { comic -> /* обробка вибору коміксу */ }
+                    onSelect = { comic -> navigateToHomePageWithComicId(comic.id ?: "") }
                 )
                 2 -> InfoPage()
             }
