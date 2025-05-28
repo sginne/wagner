@@ -39,12 +39,7 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable {
-                            // Навігація з передачою ID коміксу
 
-                            onSelect(comic)
-
-                        }
                         .padding(vertical = 8.dp)
                         .clickable { onSelect(comic) },
                     horizontalArrangement = Arrangement.SpaceBetween,
