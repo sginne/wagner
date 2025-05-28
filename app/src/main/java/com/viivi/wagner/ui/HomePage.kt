@@ -100,7 +100,7 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp)
+                    .padding(0.dp)
                     .pointerInput(currentComic, comics) {
                         detectHorizontalDragGestures { change, dragAmount ->
                             if (dragAmount > 0) { // swipe right - NEXT comic
@@ -123,26 +123,29 @@ fun HomePage(selectedTab: (Int) -> Unit) {
             ){
                 if (AppConfig.debugMode.value) {
                     DevPanel()
-                    Spacer(Modifier.height(2.dp))
+                    Spacer(Modifier.height(0.dp))
                 }
 
                 val painter = rememberAsyncImagePainter(comic.image)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp),
-                    horizontalArrangement = Arrangement.Center
+                        .height(280.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "<",
-                        fontSize = 24.sp,
-                        modifier = Modifier.padding(end = 8.dp)
+                        text = "   <${comic.previousTitle ?: ""}<",
+                        fontSize = 12.sp,
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .width(5.dp)
                     )
                     Image(
                         painter = painter,
                         contentDescription = comic.title,
                         modifier = Modifier
                             .weight(1f)
+                            .fillMaxHeight()
                             .clickable {
                                 clicks++
                                 AppConfig.comicClickCount.value = clicks
@@ -150,16 +153,18 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                                     AppConfig.debugMode.value = true
                                 }
                             },
-                        contentScale = ContentScale.Fit
+                        contentScale = ContentScale.Crop
                     )
                     Text(
                         text = ">",
                         fontSize = 24.sp,
-                        modifier = Modifier.padding(start = 8.dp)
+                        modifier = Modifier
+                            .padding(start = 4.dp)
+                            .width(24.dp)
                     )
                 }
 
-                Spacer(Modifier.height(1.dp))
+                Spacer(Modifier.height(0.dp))
 
                 Text(
                     text = comic.title,
@@ -202,14 +207,14 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                         text = "Переглянути на сайті",
                         style = MaterialTheme.typography.bodyMedium.copy(color = Color.Blue),
                         modifier = Modifier
-                            .padding(top = 4.dp)
+                            .padding(top = 0.dp)
                             .clickable {
                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://norsula.com/$id"))
                                 context.startActivity(intent)
                             }
                     )
 
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(0.dp))
 
                     Text(
                         text = "Поділитися",
@@ -229,7 +234,7 @@ fun HomePage(selectedTab: (Int) -> Unit) {
 
 
 
-                Spacer(Modifier.height(2.dp))
+                Spacer(Modifier.height(0.dp))
                 val comicsSnapshot = comics
                 val currentComicSnapshot = currentComic
                 if (AppConfig.debugMode.value && comicsSnapshot != null && currentComicSnapshot != null) {
@@ -239,7 +244,7 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                         text = "$position from $total",
                         style = MaterialTheme.typography.bodySmall
                     )
-                    Spacer(Modifier.height(2.dp))
+                    Spacer(Modifier.height(0.dp))
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     if (comic.previousId != null) {
@@ -263,7 +268,7 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp),
+                        .padding(top = 0.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     TextButton(onClick = { selectedTab(1) }) {
