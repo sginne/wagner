@@ -7,6 +7,11 @@ import androidx.activity.enableEdgeToEdge
 import com.viivi.wagner.ui.MainScreen
 import com.viivi.wagner.theme.WagnerTheme
 
+import com.viivi.wagner.ui.screens.HomePage
+import com.viivi.wagner.ui.screens.SearchPage
+import com.viivi.wagner.ui.screens.InfoPage
+
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

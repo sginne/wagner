@@ -1,4 +1,4 @@
-package com.viivi.wagner.ui
+package com.viivi.wagner.ui.screens
 
 import android.content.Intent
 import android.net.Uri
@@ -38,13 +38,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import com.viivi.wagner.ui.screens.devUi.DevPanel
 import com.viivi.wagner.AppConfig
-import android.app.Activity
-
-
-
-
-
-
 
 
 @Composable
@@ -298,16 +291,3 @@ fun HomePage(selectedTab: (Int) -> Unit) {
 
 
 
-@Composable
-fun SearchPage() {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Пошук коміксів - скоро тут буде")
-    }
-}
-
-@Composable
-fun InfoPage() {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Інформація про додаток")
-    }
-}

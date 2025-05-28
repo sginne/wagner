@@ -6,6 +6,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.viivi.wagner.R
+import com.viivi.wagner.ui.screens.HomePage
+import com.viivi.wagner.ui.screens.InfoPage
+import com.viivi.wagner.ui.screens.SearchPage
 
 @Composable
 fun MainScreen() {
