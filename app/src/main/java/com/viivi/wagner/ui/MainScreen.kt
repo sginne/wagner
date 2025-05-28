@@ -1,48 +1,53 @@
 package com.viivi.wagner.ui
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+
+import com.viivi.wagner.model.Comic
+
+import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.layout.Box
+
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import com.viivi.wagner.R
+
+import androidx.compose.foundation.layout.padding
 import com.viivi.wagner.ui.screens.HomePage
-import com.viivi.wagner.ui.screens.InfoPage
 import com.viivi.wagner.ui.screens.SearchPage
+import com.viivi.wagner.ui.screens.InfoPage
+
+
+
+
+
+
+
+
 
 @Composable
 fun MainScreen() {
     var selectedTab by remember { mutableStateOf(0) }
+    var comics by remember { mutableStateOf<List<Comic>?>(null) }
+
+    // Логіку завантаження коміксів можна винести сюди, або в HomePage і підняти стан через callback
+
     Scaffold(
-        bottomBar = {
-            if (selectedTab != 0) {
-                NavigationBar {
-                    NavigationBarItem(
-                        selected = selectedTab == 0,
-                        onClick = { selectedTab = 0 },
-                        icon = { Icon(painterResource(R.drawable.ic_home), contentDescription = "Головна") },
-                        label = { Text("Головна") }
-                    )
-                    NavigationBarItem(
-                        selected = selectedTab == 1,
-                        onClick = { selectedTab = 1 },
-                        icon = { Icon(painterResource(R.drawable.ic_search), contentDescription = "Пошук") },
-                        label = { Text("Пошук") }
-                    )
-                    NavigationBarItem(
-                        selected = selectedTab == 2,
-                        onClick = { selectedTab = 2 },
-                        icon = { Icon(painterResource(R.drawable.ic_info), contentDescription = "Інформація") },
-                        label = { Text("Інформація") }
-                    )
-                }
-            }
-        }
+        bottomBar = { /* твій код */ }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
             when (selectedTab) {
-                0 -> HomePage(selectedTab = { selectedTab = it })
-                1 -> SearchPage()
+                0 -> HomePage(
+                    selectedTab = { selectedTab = it },
+                    onComicsLoaded = { comics = it } // додай callback в HomePage
+                )
+                1 -> SearchPage(
+                    comics = comics,
+                    onSelect = { comic -> /* обробка вибору коміксу */ }
+                )
                 2 -> InfoPage()
             }
         }
