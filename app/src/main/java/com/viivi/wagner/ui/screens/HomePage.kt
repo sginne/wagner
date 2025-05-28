@@ -132,7 +132,7 @@ fun HomePage(selectedTab: (Int) -> Unit,
                     comic.nextTitle?.let { title ->
                         Text(
                             text = "   <${title
-                                .removePrefix("Віві та Вагнер - ")
+                                .removePrefix(AppConfig.prefix)
                                 .trim()
                                 .replace(" ", "<")}<",
                             fontSize = 12.sp,
@@ -160,7 +160,7 @@ fun HomePage(selectedTab: (Int) -> Unit,
                     comic.previousTitle?.let { title ->
                         Text(
                             text = "   <${title
-                                .removePrefix("Віві та Вагнер - ")
+                                .removePrefix(AppConfig.prefix)
                                 .trim()
                                 .replace(" ", ">")}>",
                             fontSize = 12.sp,

@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 object AppConfig {
     var debugMode = mutableStateOf(true)
     var comicClickCount = mutableStateOf(0)
+    const val prefix = "Віві та Вагнер - "
 
     fun load(context: Context) {
         val prefs = context.getSharedPreferences("app_config", Context.MODE_PRIVATE)
