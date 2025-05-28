@@ -134,7 +134,10 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "   <${comic.previousTitle ?: ""}<",
+                        text = "   <${comic.previousTitle
+                            ?.removePrefix("Віві та Вагнер - ")
+                            ?.trim()
+                            ?.replace(" ", "<") ?: ""}<",
                         fontSize = 12.sp,
                         modifier = Modifier
                             .padding(end = 4.dp)
