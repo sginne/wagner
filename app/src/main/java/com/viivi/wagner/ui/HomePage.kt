@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.clickable
@@ -126,21 +127,37 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                 }
 
                 val painter = rememberAsyncImagePainter(comic.image)
-                Image(
-                    painter = painter,
-                    contentDescription = comic.title,
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp)
-                        .clickable {
-                            clicks++
-                            AppConfig.comicClickCount.value = clicks
-                            if (clicks >= 7) {
-                                AppConfig.debugMode.value = true
-                            }
-                        },
-                    contentScale = ContentScale.Fit
-                )
+                        .height(300.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "<",
+                        fontSize = 24.sp,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Image(
+                        painter = painter,
+                        contentDescription = comic.title,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable {
+                                clicks++
+                                AppConfig.comicClickCount.value = clicks
+                                if (clicks >= 7) {
+                                    AppConfig.debugMode.value = true
+                                }
+                            },
+                        contentScale = ContentScale.Fit
+                    )
+                    Text(
+                        text = ">",
+                        fontSize = 24.sp,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
 
                 Spacer(Modifier.height(1.dp))
 
