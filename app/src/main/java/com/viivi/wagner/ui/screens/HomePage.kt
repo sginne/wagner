@@ -3,6 +3,9 @@ package com.viivi.wagner.ui.screens
 import android.content.Intent
 import android.net.Uri
 
+import com.viivi.wagner.utils.formatDate
+
+
 
 
 import androidx.compose.foundation.Image
@@ -184,32 +187,9 @@ fun HomePage(selectedTab: (Int) -> Unit,
                     textAlign = TextAlign.Center
                 )
 
-                comic.publishedDate?.let { dateStr ->
-                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val date = LocalDate.parse(dateStr, formatter)
-                    val day = date.dayOfMonth
-                    val month = when (date.monthValue) {
-                        1 -> "січня"
-                        2 -> "лютого"
-                        3 -> "березня"
-                        4 -> "квітня"
-                        5 -> "травня"
-                        6 -> "червня"
-                        7 -> "липня"
-                        8 -> "серпня"
-                        9 -> "вересня"
-                        10 -> "жовтня"
-                        11 -> "листопада"
-                        12 -> "грудня"
-                        else -> ""
-                    }
-                    val year = date.year
+                val formattedDate = comic.publishedDate?.let { formatDate(it) } ?: "невідомо"
+                Text(text = "переклад від $formattedDate")
 
-                    Text(
-                        text = "переклад від $day $month $year",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
                 comic.id?.let { id ->
                     Text(
                         text = "Переглянути на сайті",

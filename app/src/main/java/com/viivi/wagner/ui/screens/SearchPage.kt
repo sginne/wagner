@@ -10,6 +10,11 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.viivi.wagner.model.Comic
 import androidx.compose.foundation.clickable
+import com.viivi.wagner.AppConfig
+import com.viivi.wagner.utils.formatDate
+import androidx.compose.ui.Alignment
+
+
 
 
 @Composable
@@ -31,16 +36,26 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit) {
 
         LazyColumn {
             items(filteredComics) { comic ->
-                Text(
-                    text = comic.title,
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                         .clickable { onSelect(comic) },
-                    style = MaterialTheme.typography.bodyLarge
-                )
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = comic.title.removePrefix(AppConfig.prefix).trim(),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = comic.publishedDate?.let { formatDate(it) } ?: "невідомо",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
                 Divider()
             }
         }
+
     }
 }
