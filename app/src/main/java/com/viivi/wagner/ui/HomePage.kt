@@ -133,16 +133,19 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                         .height(280.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(
-                        text = "   <${comic.previousTitle
-                            ?.removePrefix("Віві та Вагнер - ")
-                            ?.trim()
-                            ?.replace(" ", "<") ?: ""}<",
-                        fontSize = 12.sp,
-                        modifier = Modifier
-                            .padding(end = 4.dp)
-                            .width(5.dp)
-                    )
+                    comic.nextTitle?.let { title ->
+                        Text(
+                            text = "   <${title
+                                .removePrefix("Віві та Вагнер - ")
+                                .trim()
+                                .replace(" ", "<")}<",
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                                .padding(end = 4.dp)
+                                .width(5.dp)
+                        )
+                    }
+
                     Image(
                         painter = painter,
                         contentDescription = comic.title,
@@ -158,13 +161,19 @@ fun HomePage(selectedTab: (Int) -> Unit) {
                             },
                         contentScale = ContentScale.Crop
                     )
-                    Text(
-                        text = ">",
-                        fontSize = 24.sp,
-                        modifier = Modifier
-                            .padding(start = 4.dp)
-                            .width(24.dp)
-                    )
+                    comic.previousTitle?.let { title ->
+                        Text(
+                            text = "   <${title
+                                .removePrefix("Віві та Вагнер - ")
+                                .trim()
+                                .replace(" ", ">")}>",
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                                .padding(end = 4.dp)
+                                .width(5.dp)
+                        )
+                    }
+
                 }
 
                 Spacer(Modifier.height(0.dp))
