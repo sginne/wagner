@@ -13,6 +13,7 @@ import androidx.compose.foundation.clickable
 import com.viivi.wagner.AppConfig
 import com.viivi.wagner.utils.formatDate
 import androidx.compose.ui.Alignment
+import java.time.LocalDate
 
 
 
@@ -20,18 +21,50 @@ import androidx.compose.ui.Alignment
 @Composable
 fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit) {
     var query by remember { mutableStateOf(TextFieldValue("")) }
+    var startDateText by remember { mutableStateOf("") }
+    var endDateText by remember { mutableStateOf("") }
+
+    fun parseDate(text: String) = runCatching { LocalDate.parse(text) }.getOrNull()
+
+    val startDate = parseDate(startDateText)
+    val endDate = parseDate(endDateText)
 
     val filteredComics = comics?.filter {
-        it.title.contains(query.text, ignoreCase = true)
+        val date = it.publishedDate?.let { d -> runCatching { LocalDate.parse(d) }.getOrNull() }
+        val matchesQuery = it.title.contains(query.text, ignoreCase = true)
+        val inRange = (startDate == null || (date != null && date >= startDate)) &&
+                (endDate == null || (date != null && date <= endDate))
+        matchesQuery && inRange
     } ?: emptyList()
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            OutlinedTextField(
+                value = startDateText,
+                onValueChange = { startDateText = it },
+                label = { Text("Початкова дата (yyyy-MM-dd)") },
+                modifier = Modifier.weight(1f)
+            )
+            OutlinedTextField(
+                value = endDateText,
+                onValueChange = { endDateText = it },
+                label = { Text("Кінцева дата (yyyy-MM-dd)") },
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         OutlinedTextField(
             value = query,
             onValueChange = { query = it },
             label = { Text("Пошук коміксів") },
             modifier = Modifier.fillMaxWidth()
         )
+
         Spacer(modifier = Modifier.height(8.dp))
 
         LazyColumn {
@@ -39,7 +72,6 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-
                         .padding(vertical = 8.dp)
                         .clickable { onSelect(comic) },
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -57,6 +89,5 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit) {
                 HorizontalDivider()
             }
         }
-
     }
 }
