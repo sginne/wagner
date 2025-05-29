@@ -20,6 +20,9 @@ import androidx.compose.material3.Button
 import androidx.compose.ui.platform.LocalContext
 import java.util.Calendar
 
+import java.util.Locale
+
+
 
 
 
@@ -28,7 +31,7 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit) {
     var query by remember { mutableStateOf(TextFieldValue("")) }
     var startDateText by remember { mutableStateOf("") }
     var endDateText by remember { mutableStateOf("") }
-    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+    //var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
     val context = LocalContext.current
 
     fun parseDate(text: String) = runCatching { LocalDate.parse(text) }.getOrNull()
@@ -40,7 +43,9 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit) {
     val datePickerDialog = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
-            startDateText = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth)
+            startDateText = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, dayOfMonth)
+
+
         },
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
