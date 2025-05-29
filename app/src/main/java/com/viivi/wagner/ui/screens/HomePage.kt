@@ -42,7 +42,16 @@ import androidx.compose.ui.input.pointer.pointerInput
 import com.viivi.wagner.ui.screens.devUi.DevPanel
 import com.viivi.wagner.AppConfig
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.ui.unit.IntOffset
+
+import androidx.compose.animation.ExperimentalAnimationApi
+
+
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HomePage(selectedTab: (Int) -> Unit,
              onComicsLoaded: (List<Comic>)-> Unit,
@@ -53,6 +62,8 @@ fun HomePage(selectedTab: (Int) -> Unit,
     val context = LocalContext.current
     var clicks by remember { mutableStateOf(AppConfig.comicClickCount.value) }
     //var debugMode = remember { mutableStateOf(true) } // в AppConfig
+    var swipeDirection by remember { mutableStateOf(0) } // 1 = next, -1 = prev
+
 
 
     LaunchedEffect(Unit) {
@@ -114,12 +125,14 @@ fun HomePage(selectedTab: (Int) -> Unit,
                     .pointerInput(currentComic, comics) {
                         detectHorizontalDragGestures { change, dragAmount ->
                             if (dragAmount > 0) { // swipe right - NEXT comic
+                                swipeDirection = 1
                                 currentComic?.nextId?.let { nextId ->
                                     comics?.find { it.id == nextId }?.let {
                                         currentComic = it
                                     }
                                 }
                             } else if (dragAmount < 0) { // swipe left - PREVIOUS comic
+                                swipeDirection = -1
                                 currentComic?.previousId?.let { prevId ->
                                     comics?.find { it.id == prevId }?.let {
                                         currentComic = it
@@ -136,55 +149,75 @@ fun HomePage(selectedTab: (Int) -> Unit,
                     Spacer(Modifier.height(0.dp))
                 }
 
-                val painter = rememberAsyncImagePainter(comic.image)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(280.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    comic.nextTitle?.let { title ->
-                        Text(
-                            text = "   <${title
-                                .removePrefix(AppConfig.prefix)
-                                .trim()
-                                .replace(" ", "<")}<",
-                            fontSize = 12.sp,
-                            modifier = Modifier
-                                .padding(end = 4.dp)
-                                .width(5.dp)
-                        )
-                    }
+                AnimatedContent(
+                    targetState = currentComic,
+                    transitionSpec = {
+                        val slideSpec = tween<IntOffset>(durationMillis = 300)
+                        val fadeSpec = tween<Float>(durationMillis = 300)
 
-                    Image(
-                        painter = painter,
-                        contentDescription = comic.title,
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                            .clickable {
-                                clicks++
-                                AppConfig.comicClickCount.value = clicks
-                                if (clicks >= 7) {
-                                    AppConfig.debugMode.value = true
-                                }
-                            },
-                        contentScale = ContentScale.Crop
-                    )
-                    comic.previousTitle?.let { title ->
-                        Text(
-                            text = "   <${title
-                                .removePrefix(AppConfig.prefix)
-                                .trim()
-                                .replace(" ", ">")}>",
-                            fontSize = 12.sp,
-                            modifier = Modifier
-                                .padding(end = 4.dp)
-                                .width(5.dp)
-                        )
+                        if (swipeDirection == 1) {
+                            (slideInHorizontally(animationSpec = slideSpec) { it } + fadeIn(animationSpec = fadeSpec)) with
+                                    (slideOutHorizontally(animationSpec = slideSpec) { -it } + fadeOut(animationSpec = fadeSpec))
+                        } else {
+                            (slideInHorizontally(animationSpec = slideSpec) { -it } + fadeIn(animationSpec = fadeSpec)) with
+                                    (slideOutHorizontally(animationSpec = slideSpec) { it } + fadeOut(animationSpec = fadeSpec))
+                        }.using(SizeTransform(clip = false))
                     }
+                ) { comic ->
+                    comic?.let {
+                        val painter = rememberAsyncImagePainter(it.image)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(280.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            it.nextTitle?.let { title ->
+                                Text(
+                                    text = "   <${title
+                                        .removePrefix(AppConfig.prefix)
+                                        .trim()
+                                        .replace(" ", "<")}<",
+                                    fontSize = 12.sp,
+                                    modifier = Modifier
+                                        .padding(end = 4.dp)
+                                        .width(5.dp)
+                                )
+                            }
 
+                            Image(
+                                painter = painter,
+                                contentDescription = it.title,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                                    .clickable {
+                                        clicks++
+                                        AppConfig.comicClickCount.value = clicks
+                                        if (clicks >= 7) {
+                                            AppConfig.debugMode.value = true
+                                        }
+                                    },
+                                contentScale = ContentScale.Crop
+                            )
+
+                            it.previousTitle?.let { title ->
+                                Text(
+                                    text = "   <${title
+                                        .removePrefix(AppConfig.prefix)
+                                        .trim()
+                                        .replace(" ", ">")}>",
+                                    fontSize = 12.sp,
+                                    modifier = Modifier
+                                        .padding(end = 4.dp)
+                                        .width(5.dp)
+                                )
+                            }
+                        }
+                    }
                 }
+
+
 
                 Spacer(Modifier.height(0.dp))
 
