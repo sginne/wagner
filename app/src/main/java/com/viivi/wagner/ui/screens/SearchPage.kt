@@ -40,7 +40,7 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit) {
     val datePickerDialog = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
-            selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
+            startDateText = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth)
         },
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
@@ -61,10 +61,19 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit) {
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Button(onClick = { datePickerDialog.show() }) {
-                Text(text = selectedDate?.toString() ?: "Select date")
+            Button(onClick = { datePickerDialog.show() },
+                contentPadding = PaddingValues(4.dp),
+                modifier = Modifier
+                    .size(36.dp)
+                    .align(Alignment.CenterVertically)
+                    .offset(x =  8.dp)  // overlap TextField by 8.dp to left
+
+
+            ) {
+                Text(text =  "\uD83D\uDCC5")
             }
 
             OutlinedTextField(
