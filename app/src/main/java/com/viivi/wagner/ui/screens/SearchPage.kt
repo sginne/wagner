@@ -15,6 +15,11 @@ import com.viivi.wagner.utils.formatDate
 import androidx.compose.ui.Alignment
 import java.time.LocalDate
 
+import android.app.DatePickerDialog
+import androidx.compose.material3.Button
+import androidx.compose.ui.platform.LocalContext
+import java.util.Calendar
+
 
 
 
@@ -23,11 +28,24 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit) {
     var query by remember { mutableStateOf(TextFieldValue("")) }
     var startDateText by remember { mutableStateOf("") }
     var endDateText by remember { mutableStateOf("") }
+    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+    val context = LocalContext.current
 
     fun parseDate(text: String) = runCatching { LocalDate.parse(text) }.getOrNull()
 
     val startDate = parseDate(startDateText)
     val endDate = parseDate(endDateText)
+
+    val calendar = Calendar.getInstance()
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    )
 
     val filteredComics = comics?.filter {
         val date = it.publishedDate?.let { d -> runCatching { LocalDate.parse(d) }.getOrNull() }
@@ -38,10 +56,17 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit) {
     } ?: emptyList()
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            Button(onClick = { datePickerDialog.show() }) {
+                Text(text = selectedDate?.toString() ?: "Select date")
+            }
+
             OutlinedTextField(
                 value = startDateText,
                 onValueChange = { startDateText = it },
