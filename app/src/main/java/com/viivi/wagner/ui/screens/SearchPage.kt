@@ -54,7 +54,7 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit) {
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
-                Divider()
+                HorizontalDivider()
             }
         }
 

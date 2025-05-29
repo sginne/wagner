@@ -52,7 +52,7 @@ fun HomePage(selectedTab: (Int) -> Unit,
     var error by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     var clicks by remember { mutableStateOf(AppConfig.comicClickCount.value) }
-    var debugMode = remember { mutableStateOf(true) } // в AppConfig
+    //var debugMode = remember { mutableStateOf(true) } // в AppConfig
 
 
     LaunchedEffect(Unit) {
@@ -93,14 +93,17 @@ fun HomePage(selectedTab: (Int) -> Unit,
             LaunchedEffect(refreshTrigger) {
                 try {
                     comics = fetchComicsWithCache(context)
-                    if (currentComic == null && !comics.isNullOrEmpty()) {
-                        currentComic = comics?.firstOrNull()
+                    val comicsList = comics
+                    if (currentComic == null && !comicsList.isNullOrEmpty()) {
+                        currentComic = comicsList.firstOrNull { it.id == initialComicId } ?: comicsList.firstOrNull()
                     }
                     error = null
                 } catch (e: Exception) {
                     error = "Помилка оновлення: ${e.localizedMessage}"
                 }
             }
+
+
 
 
             Column(

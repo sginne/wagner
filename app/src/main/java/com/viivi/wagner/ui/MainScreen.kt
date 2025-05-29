@@ -52,8 +52,10 @@ fun MainScreen() {
             when (selectedTab) {
                 0 -> HomePage(
                     selectedTab = { selectedTab = it },
-                    onComicsLoaded = { comics = it }, // додай callback в HomePage
-                            initialComicId = "2025/05/24/vivi-ta-vagner-priyemni-ta-nepriyemni-syurprizi/"
+                    onComicsLoaded = { comics = it },
+                    initialComicId = selectedComicId
+
+                    //initialComicId = "2025/05/24/vivi-ta-vagner-priyemni-ta-nepriyemni-syurprizi/"
 
                 )
                 1 -> SearchPage(
