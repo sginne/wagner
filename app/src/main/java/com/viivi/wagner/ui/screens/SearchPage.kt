@@ -51,6 +51,15 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit) {
         calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH)
     )
+    val endDatePickerDialog = DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            endDateText = String.format(Locale.US, "%04d-%02d-%02d", year, month + 1, dayOfMonth)
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    )
 
     val filteredComics = comics?.filter {
         val date = it.publishedDate?.let { d -> runCatching { LocalDate.parse(d) }.getOrNull() }
@@ -93,6 +102,12 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit) {
                 label = { Text("Кінцева дата (yyyy-MM-dd)") },
                 modifier = Modifier.weight(1f)
             )
+            Button(onClick = { endDatePickerDialog.show() },
+                contentPadding = PaddingValues(4.dp),
+                modifier = Modifier.size(36.dp).offset(x = (-8).dp)
+            ) {
+                Text(text = "\uD83D\uDCC5")
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
