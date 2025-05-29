@@ -93,12 +93,15 @@ fun HomePage(selectedTab: (Int) -> Unit,
             LaunchedEffect(refreshTrigger) {
                 try {
                     comics = fetchComicsWithCache(context)
-                    currentComic = comics?.firstOrNull()
+                    if (currentComic == null && !comics.isNullOrEmpty()) {
+                        currentComic = comics?.firstOrNull()
+                    }
                     error = null
                 } catch (e: Exception) {
                     error = "Помилка оновлення: ${e.localizedMessage}"
                 }
             }
+
 
             Column(
                 modifier = Modifier
