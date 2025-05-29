@@ -37,8 +37,8 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.ui.input.pointer.pointerInput
 
 
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+//import java.time.LocalDate
+//import java.time.format.DateTimeFormatter
 import com.viivi.wagner.ui.screens.devUi.DevPanel
 import com.viivi.wagner.AppConfig
 
@@ -88,7 +88,7 @@ fun HomePage(selectedTab: (Int) -> Unit,
         }
         else -> {
             val comic = currentComic!!
-            var refreshTrigger by remember { mutableStateOf(0) }
+            val refreshTrigger by remember { mutableStateOf(0) }
 
             LaunchedEffect(refreshTrigger) {
                 try {
