@@ -156,11 +156,11 @@ fun HomePage(selectedTab: (Int) -> Unit,
                         val fadeSpec = tween<Float>(durationMillis = 300)
 
                         if (swipeDirection == 1) {
-                            (slideInHorizontally(animationSpec = slideSpec) { it } + fadeIn(animationSpec = fadeSpec)) with
-                                    (slideOutHorizontally(animationSpec = slideSpec) { -it } + fadeOut(animationSpec = fadeSpec))
-                        } else {
                             (slideInHorizontally(animationSpec = slideSpec) { -it } + fadeIn(animationSpec = fadeSpec)) with
                                     (slideOutHorizontally(animationSpec = slideSpec) { it } + fadeOut(animationSpec = fadeSpec))
+                        } else {
+                            (slideInHorizontally(animationSpec = slideSpec) { it } + fadeIn(animationSpec = fadeSpec)) with
+                                    (slideOutHorizontally(animationSpec = slideSpec) { -it } + fadeOut(animationSpec = fadeSpec))
                         }.using(SizeTransform(clip = false))
                     }
                 ) { comic ->
