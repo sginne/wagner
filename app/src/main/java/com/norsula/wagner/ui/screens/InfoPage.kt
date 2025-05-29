@@ -1,4 +1,4 @@
-package com.viivi.wagner.ui.screens
+package com.norsula.wagner.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

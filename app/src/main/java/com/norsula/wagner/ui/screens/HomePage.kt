@@ -1,9 +1,9 @@
-package com.viivi.wagner.ui.screens
+package com.norsula.wagner.ui.screens
 
 import android.content.Intent
 import android.net.Uri
 
-import com.viivi.wagner.utils.formatDate
+import com.norsula.wagner.utils.formatDate
 
 
 
@@ -29,7 +29,7 @@ import androidx.compose.foundation.clickable
 
 import coil.compose.rememberAsyncImagePainter
 
-import com.viivi.wagner.model.*
+import com.norsula.wagner.model.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -39,8 +39,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 
 //import java.time.LocalDate
 //import java.time.format.DateTimeFormatter
-import com.viivi.wagner.ui.screens.devUi.DevPanel
-import com.viivi.wagner.AppConfig
+import com.norsula.wagner.ui.screens.devUi.DevPanel
+import com.norsula.wagner.AppConfig
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween

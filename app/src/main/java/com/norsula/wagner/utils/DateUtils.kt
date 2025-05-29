@@ -1,4 +1,4 @@
-package com.viivi.wagner.utils
+package com.norsula.wagner.utils
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

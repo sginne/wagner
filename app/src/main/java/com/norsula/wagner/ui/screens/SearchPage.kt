@@ -1,4 +1,4 @@
-package com.viivi.wagner.ui.screens
+package com.norsula.wagner.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,10 +8,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import com.viivi.wagner.model.Comic
+import com.norsula.wagner.model.Comic
 import androidx.compose.foundation.clickable
-import com.viivi.wagner.AppConfig
-import com.viivi.wagner.utils.formatDate
+import com.norsula.wagner.AppConfig
+import com.norsula.wagner.utils.formatDate
 import androidx.compose.ui.Alignment
 import java.time.LocalDate
 

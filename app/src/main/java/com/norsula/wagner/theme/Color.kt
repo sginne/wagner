@@ -1,4 +1,4 @@
-package com.viivi.wagner.theme
+package com.norsula.wagner.theme
 
 import androidx.compose.ui.graphics.Color
 

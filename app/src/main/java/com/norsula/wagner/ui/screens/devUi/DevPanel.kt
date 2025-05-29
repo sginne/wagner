@@ -1,4 +1,4 @@
-package com.viivi.wagner.ui.screens.devUi
+package com.norsula.wagner.ui.screens.devUi
 
 import android.content.Context
 import androidx.compose.foundation.border
@@ -30,7 +30,7 @@ import kotlinx.coroutines.withContext
 import java.nio.file.Files
 import java.nio.file.Path
 import okio.Path.Companion.toOkioPath
-import com.viivi.wagner.AppConfig
+import com.norsula.wagner.AppConfig
 
 
 fun calculateCoilCacheItems(context: Context): Int {

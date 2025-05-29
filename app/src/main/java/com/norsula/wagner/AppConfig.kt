@@ -1,4 +1,4 @@
-package com.viivi.wagner
+package com.norsula.wagner
 
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf

@@ -6,13 +6,13 @@ plugins {
 
 android {
     compileSdk = 35
-    namespace = "com.viivi.wagner"
+    namespace = "com.norsula.wagner"
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 
     defaultConfig {
-        applicationId = "com.viivi.wagner"
+        applicationId = "com.norsula.wagner"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

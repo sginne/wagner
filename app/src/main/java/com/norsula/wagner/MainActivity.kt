@@ -1,15 +1,15 @@
-package com.viivi.wagner
+package com.norsula.wagner
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.viivi.wagner.ui.MainScreen
-import com.viivi.wagner.theme.WagnerTheme
+import com.norsula.wagner.ui.MainScreen
+import com.norsula.wagner.theme.WagnerTheme
 
-import com.viivi.wagner.ui.screens.HomePage
-import com.viivi.wagner.ui.screens.SearchPage
-import com.viivi.wagner.ui.screens.InfoPage
+import com.norsula.wagner.ui.screens.HomePage
+import com.norsula.wagner.ui.screens.SearchPage
+import com.norsula.wagner.ui.screens.InfoPage
 
 
 class MainActivity : ComponentActivity() {

@@ -1,4 +1,4 @@
-package com.viivi.wagner.theme
+package com.norsula.wagner.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -12,7 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
-import com.viivi.wagner.R
+import com.norsula.wagner.R
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 

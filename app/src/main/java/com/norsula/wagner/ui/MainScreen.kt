@@ -1,4 +1,4 @@
-package com.viivi.wagner.ui
+package com.norsula.wagner.ui
 
 
 import androidx.compose.runtime.Composable
@@ -8,7 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 
-import com.viivi.wagner.model.Comic
+import com.norsula.wagner.model.Comic
 
 import androidx.compose.material3.Scaffold
 import androidx.compose.foundation.layout.Box
@@ -16,9 +16,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.Modifier
 
 import androidx.compose.foundation.layout.padding
-import com.viivi.wagner.ui.screens.HomePage
-import com.viivi.wagner.ui.screens.SearchPage
-import com.viivi.wagner.ui.screens.InfoPage
+import com.norsula.wagner.ui.screens.HomePage
+import com.norsula.wagner.ui.screens.SearchPage
+import com.norsula.wagner.ui.screens.InfoPage
 
 
 

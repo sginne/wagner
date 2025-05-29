@@ -1,4 +1,4 @@
-package com.viivi.wagner.model
+package com.norsula.wagner.model
 
 import android.util.Log
 import android.content.Context
