@@ -10,6 +10,10 @@ import com.norsula.wagner.theme.WagnerTheme
 import com.norsula.wagner.ui.screens.HomePage
 import com.norsula.wagner.ui.screens.SearchPage
 import com.norsula.wagner.ui.screens.InfoPage
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import java.util.concurrent.TimeUnit
+import com.viivi.wagner.worker.ComicCheckWorker
 
 
 class MainActivity : ComponentActivity() {
