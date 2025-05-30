@@ -16,6 +16,7 @@ class ComicCheckWorker(
         return try {
             val comics = fetchComicsWithCache(applicationContext)
             // TODO: compare with saved comic id or date to detect new comic
+            println("doWork()")
             val isNewComic = checkForNewComic(comics)
             if (isNewComic) {
                 NotificationHelper.showNewComicNotification(applicationContext)
@@ -27,7 +28,7 @@ class ComicCheckWorker(
     }
 
     private fun checkForNewComic(comics: List<Comic>): Boolean {
-        // implement logic to detect new comic
+
         return true // placeholder
     }
 }

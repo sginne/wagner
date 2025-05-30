@@ -23,6 +23,9 @@ class MainActivity : ComponentActivity() {
         window.statusBarColor = android.graphics.Color.TRANSPARENT
         window.navigationBarColor = android.graphics.Color.TRANSPARENT
 
+        val workRequest = PeriodicWorkRequestBuilder<ComicCheckWorker>(1, TimeUnit.MINUTES).build()
+        WorkManager.getInstance(applicationContext).enqueue(workRequest)
+
         setContent {
             WagnerTheme {
                 MainScreen()

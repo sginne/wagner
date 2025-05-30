@@ -121,6 +121,7 @@ fun DevPanel() {
                     cacheSize = size
                     cacheItems = count
                     coilCacheItems = coilCount
+
                 }
             }) {
                 Text("Оновити")
