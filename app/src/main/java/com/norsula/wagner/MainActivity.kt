@@ -14,6 +14,8 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import java.util.concurrent.TimeUnit
 import com.viivi.wagner.worker.ComicCheckWorker
+import androidx.work.ExistingPeriodicWorkPolicy
+
 
 
 class MainActivity : ComponentActivity() {
@@ -24,7 +26,11 @@ class MainActivity : ComponentActivity() {
         window.navigationBarColor = android.graphics.Color.TRANSPARENT
 
         val workRequest = PeriodicWorkRequestBuilder<ComicCheckWorker>(1, TimeUnit.MINUTES).build()
-        WorkManager.getInstance(applicationContext).enqueue(workRequest)
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            "ComicCheckWork",
+            ExistingPeriodicWorkPolicy.KEEP,
+            workRequest
+        )
 
         setContent {
             WagnerTheme {
