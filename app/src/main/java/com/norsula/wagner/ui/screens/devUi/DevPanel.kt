@@ -31,6 +31,8 @@ import java.nio.file.Files
 import java.nio.file.Path
 import okio.Path.Companion.toOkioPath
 import com.norsula.wagner.AppConfig
+import com.norsula.wagner.notification.NotificationHelper
+
 
 
 fun calculateCoilCacheItems(context: Context): Int {
@@ -126,8 +128,15 @@ fun DevPanel() {
             }) {
                 Text("Оновити")
             }
+            Button(onClick = {
+                NotificationHelper.showNewComicNotification(context)
+            }) {
+                Text("Тест сповіщення")
+            }
 
         }
     }
+
+
 }
 
