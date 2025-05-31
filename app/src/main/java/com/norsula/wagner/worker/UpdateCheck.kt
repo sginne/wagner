@@ -15,11 +15,10 @@ class ComicCheckWorker(
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        println("ComicCheckWorker STARTED at ${System.currentTimeMillis()}")
+        LogUtil.debug("ComicCheckWorker STARTED at ${System.currentTimeMillis()}")
         return try {
             val comics = fetchComicsWithCache(applicationContext)
             LogUtil.debug("Комікс було перевірено останнього разу о ${LocalTime.now()}")
-            println("Комікс було перевірено останнього разу о ${LocalTime.now()}")
             val isNewComic = checkForNewComic(comics)
             if (isNewComic) {
                 NotificationHelper.showNewComicNotification(applicationContext)
