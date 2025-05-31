@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit
 class WagnerApp : Application() {
     override fun onCreate() {
         super.onCreate()
-        println("WagnerApp onCreate() called")
         setupComicCheckWorker()
     }
 
@@ -20,7 +19,6 @@ class WagnerApp : Application() {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
-        println("Setting up ComicCheckWorker")
         val workRequest = PeriodicWorkRequestBuilder<ComicCheckWorker>(
             15, TimeUnit.MINUTES
         ).setConstraints(constraints).build()
@@ -33,7 +31,7 @@ class WagnerApp : Application() {
             )
             getWorkInfosForUniqueWorkLiveData("ComicCheckWork")
                 .observeForever { workInfos ->
-                    println("Work status: ${workInfos?.firstOrNull()?.state}")
+                    //println("Work status: ${workInfos?.firstOrNull()?.state}")
                 }
         }
     }

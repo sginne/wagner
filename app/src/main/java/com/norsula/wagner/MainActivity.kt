@@ -9,7 +9,7 @@ import com.norsula.wagner.theme.WagnerTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        println("App started")
+        //println("App started")
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         window.statusBarColor = android.graphics.Color.TRANSPARENT

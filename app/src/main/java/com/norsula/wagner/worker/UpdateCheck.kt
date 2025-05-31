@@ -7,6 +7,7 @@ import com.norsula.wagner.model.fetchComicsWithCache
 import com.norsula.wagner.model.Comic
 import com.norsula.wagner.notification.NotificationHelper
 import java.time.LocalTime
+import com.norsula.wagner.utils.LogUtil
 
 class ComicCheckWorker(
     appContext: Context,
@@ -17,12 +18,13 @@ class ComicCheckWorker(
         println("ComicCheckWorker STARTED at ${System.currentTimeMillis()}")
         return try {
             val comics = fetchComicsWithCache(applicationContext)
+            LogUtil.debug("Комікс було перевірено останнього разу о ${LocalTime.now()}")
             println("Комікс було перевірено останнього разу о ${LocalTime.now()}")
             val isNewComic = checkForNewComic(comics)
             if (isNewComic) {
                 NotificationHelper.showNewComicNotification(applicationContext)
             }
-            println("ComicCheckWorker COMPLETED successfully")
+            //println("ComicCheckWorker COMPLETED successfully")
             Result.success()
         } catch (e: Exception) {
             e.printStackTrace()
