@@ -8,6 +8,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.norsula.wagner.R
 import com.norsula.wagner.utils.LogUtil
+import com.norsula.wagner.model.Comic
 
 
 object NotificationHelper {
@@ -16,7 +17,7 @@ object NotificationHelper {
     private const val NOTIFICATION_ID = 414232 // Fixed ID for all comic notifications
 
 
-    fun showNewComicNotification(context: Context) {
+    fun showNewComicNotification(context: Context, comic:Comic) {
         LogUtil.debug("Preparing new comic notification")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             LogUtil.debug("Creating notification channel")
@@ -35,7 +36,7 @@ object NotificationHelper {
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification) // put a real icon in res/drawable
             .setContentTitle("New Comic Available!")
-            .setContentText("Tap to view the latest comic.")
+            .setContentText("New comic: ${comic.title}")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
         try {

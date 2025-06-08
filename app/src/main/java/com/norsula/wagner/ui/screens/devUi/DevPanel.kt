@@ -32,6 +32,8 @@ import java.nio.file.Path
 import okio.Path.Companion.toOkioPath
 import com.norsula.wagner.AppConfig
 import com.norsula.wagner.notification.NotificationHelper
+import com.norsula.wagner.model.Comic
+
 
 
 
@@ -129,8 +131,14 @@ fun DevPanel() {
                 Text("Оновити")
             }
             Button(onClick = {
-                NotificationHelper.showNewComicNotification(context)
-            }) {
+                NotificationHelper.showNewComicNotification(
+                    context,
+                    comic = Comic(
+                        id = "test",
+                        title = "Тест",
+                        image = "https://example.com/test.jpg"
+                    )
+                )            }) {
                 Text("Тест сповіщення")
             }
 

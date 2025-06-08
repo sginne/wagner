@@ -21,7 +21,13 @@ class ComicCheckWorker(
             LogUtil.debug("Комікс було перевірено останнього разу о ${LocalTime.now()}")
             val isNewComic = checkForNewComic(comics)
             if (isNewComic) {
-                NotificationHelper.showNewComicNotification(applicationContext)
+                if (isNewComic) {
+                    val latestComic = comics.maxByOrNull { it.num ?: 0 }
+                    latestComic?.let {
+                        NotificationHelper.showNewComicNotification(applicationContext, comic = it)
+                    }
+                }
+
             }
             //println("ComicCheckWorker COMPLETED successfully")
             Result.success()
@@ -33,7 +39,8 @@ class ComicCheckWorker(
     }
 
     private fun checkForNewComic(comics: List<Comic>): Boolean {
-        // Implement your actual logic here
+        val latestComic = comics.maxByOrNull { it.num ?: 0 } ?: return false
+        LogUtil.debug("Latest comic num in cache: ${latestComic?.num}")
         return true // placeholder
     }
 }
