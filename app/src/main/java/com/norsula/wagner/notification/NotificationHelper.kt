@@ -9,6 +9,9 @@ import androidx.core.app.NotificationManagerCompat
 import com.norsula.wagner.R
 import com.norsula.wagner.utils.LogUtil
 import com.norsula.wagner.model.Comic
+import android.app.PendingIntent
+import android.content.Intent
+import com.norsula.wagner.MainActivity
 
 
 object NotificationHelper {
@@ -32,6 +35,15 @@ object NotificationHelper {
         val contentTitle = "🎉 Новий комікс ${comic.num}!"
         val contentText = "«${comic.title}» — торкніться, щоб переглянути."
 
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context, 0, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification) // use your actual icon
             .setContentTitle(contentTitle)
@@ -39,6 +51,7 @@ object NotificationHelper {
             .setStyle(NotificationCompat.BigTextStyle().bigText(contentText))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
 
         try {
             with(NotificationManagerCompat.from(context)) {
