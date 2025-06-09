@@ -29,7 +29,7 @@ object NotificationHelper {
             manager.createNotificationChannel(channel)
         }
 
-        val contentTitle = "🎉 Новий комікс #${comic.num}!"
+        val contentTitle = "🎉 Новий комікс ${comic.num}!"
         val contentText = "«${comic.title}» — торкніться, щоб переглянути."
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
