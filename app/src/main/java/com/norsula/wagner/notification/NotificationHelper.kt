@@ -17,27 +17,28 @@ object NotificationHelper {
     private const val NOTIFICATION_ID = 414232 // Fixed ID for all comic notifications
 
 
-    fun showNewComicNotification(context: Context, comic:Comic) {
+    fun showNewComicNotification(context: Context, comic: Comic) {
         LogUtil.debug("Preparing new comic notification")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            LogUtil.debug("Creating notification channel")
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_DEFAULT
-            ).apply {
-                LogUtil.debug("Channel configured with importance: DEFAULT")
-            }
+            )
             val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.createNotificationChannel(channel)
-            LogUtil.debug("Notification channel created")
         }
 
+        val contentTitle = "🎉 Новий комікс #${comic.num}!"
+        val contentText = "«${comic.title}» — торкніться, щоб переглянути."
+
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_notification) // put a real icon in res/drawable
-            .setContentTitle("New Comic Available!")
-            .setContentText("New comic: ${comic.title}")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setSmallIcon(R.drawable.ic_notification) // use your actual icon
+            .setContentTitle(contentTitle)
+            .setContentText(contentText)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(contentText))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
 
         try {
             with(NotificationManagerCompat.from(context)) {

@@ -8,6 +8,7 @@ import com.norsula.wagner.model.Comic
 import com.norsula.wagner.notification.NotificationHelper
 import java.time.LocalTime
 import com.norsula.wagner.utils.LogUtil
+import com.norsula.wagner.AppConfig
 
 class ComicCheckWorker(
     appContext: Context,
@@ -17,19 +18,26 @@ class ComicCheckWorker(
     override suspend fun doWork(): Result {
         LogUtil.debug("ComicCheckWorker STARTED at ${System.currentTimeMillis()}")
         return try {
+            AppConfig.load(applicationContext)
+
+            val prefs = applicationContext.getSharedPreferences("app_config", Context.MODE_PRIVATE)
+            LogUtil.debug("Loaded lastCheckedNum from prefs: ${prefs.getInt("lastCheckedNum", -1)}")
+
             val comics = fetchComicsWithCache(applicationContext)
-            LogUtil.debug("Комікс було перевірено останнього разу о ${LocalTime.now()}")
             val isNewComic = checkForNewComic(comics)
+
             if (isNewComic) {
-                if (isNewComic) {
-                    val latestComic = comics.maxByOrNull { it.num ?: 0 }
-                    latestComic?.let {
-                        NotificationHelper.showNewComicNotification(applicationContext, comic = it)
+                val latestComic = comics.maxByOrNull { it.num ?: 0 }
+                latestComic?.let { comic ->
+                    NotificationHelper.showNewComicNotification(applicationContext, comic)
+                    comic.num?.let { num ->
+                        AppConfig.lastCheckedNum.value = num
+                        AppConfig.save(applicationContext)
+                        LogUtil.debug("Updated lastCheckedNum to $num and saved")
                     }
                 }
-
             }
-            //println("ComicCheckWorker COMPLETED successfully")
+
             Result.success()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -40,7 +48,10 @@ class ComicCheckWorker(
 
     private fun checkForNewComic(comics: List<Comic>): Boolean {
         val latestComic = comics.maxByOrNull { it.num ?: 0 } ?: return false
-        LogUtil.debug("Latest comic num in cache: ${latestComic?.num}")
-        return true // placeholder
+        val lastSaved = AppConfig.lastCheckedNum.value
+        val latestNum = latestComic.num ?: 0
+
+        LogUtil.debug("Comparing: latest = $latestNum, saved = $lastSaved")
+        return latestNum > lastSaved
     }
 }
