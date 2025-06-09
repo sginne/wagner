@@ -55,7 +55,14 @@ object NotificationHelper {
 
         try {
             with(NotificationManagerCompat.from(context)) {
-                notify(NOTIFICATION_ID, builder.build())
+                if (NotificationManagerCompat.from(context).areNotificationsEnabled()) {
+                    with(NotificationManagerCompat.from(context)) {
+                        notify(NOTIFICATION_ID, builder.build())
+                        LogUtil.debug("Notification displayed successfully (ID: $NOTIFICATION_ID)")
+                    }
+                } else {
+                    LogUtil.debug("Notifications are disabled by user")
+                }
                 LogUtil.debug("Notification displayed successfully (ID: $NOTIFICATION_ID)")
             }
         } catch (e: Exception) {
