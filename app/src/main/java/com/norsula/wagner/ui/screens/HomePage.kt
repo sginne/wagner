@@ -203,7 +203,7 @@ fun HomePage(selectedTab: (Int) -> Unit,
 
                             it.previousTitle?.let { title ->
                                 Text(
-                                    text = "   <${title
+                                    text = "   >${title
                                         .removePrefix(AppConfig.prefix)
                                         .trim()
                                         .replace(" ", ">")}>",
@@ -232,21 +232,43 @@ fun HomePage(selectedTab: (Int) -> Unit,
                 )
 
                 val formattedDate = comic.publishedDate?.let { formatDate(it) } ?: "невідомо"
-                Text(text = "переклад від $formattedDate")
+                Text(text = "переклад від $formattedDate",
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center)
 
-                comic.id?.let { id ->
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
                         text = "Переглянути на сайті",
                         style = MaterialTheme.typography.bodyMedium.copy(color = Color.Blue),
                         modifier = Modifier
-                            .padding(top = 0.dp)
                             .clickable {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://norsula.com/$id"))
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://norsula.com/${comic.id}"))
                                 context.startActivity(intent)
                             }
                     )
 
-                    Spacer(Modifier.height(0.dp))
+                    val comicsSnapshot = comics
+                    val currentComicSnapshot = currentComic
+
+                    if (AppConfig.debugMode.value && comicsSnapshot != null && currentComicSnapshot != null) {
+                        val position = comicsSnapshot.indexOfFirst { it.id == currentComicSnapshot.id }
+                            .takeIf { it >= 0 }?.let { comicsSnapshot.size - it } ?: "?"
+                        val total = comicsSnapshot.size
+
+                        Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            Text(
+                                text = "$position from $total",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    } else {
+                        Spacer(Modifier.weight(1f))
+                    }
+
 
                     Text(
                         text = "Поділитися",
@@ -256,29 +278,14 @@ fun HomePage(selectedTab: (Int) -> Unit,
                                 val shareIntent = Intent(Intent.ACTION_SEND).apply {
                                     type = "text/plain"
                                     putExtra(Intent.EXTRA_SUBJECT, comic.title)
-                                    putExtra(Intent.EXTRA_TEXT, "Подивись цей комікс: ${comic.title}\nhttps://norsula.com/$id")
+                                    putExtra(Intent.EXTRA_TEXT, "Подивись цей комікс: ${comic.title}\nhttps://norsula.com/${comic.id}")
                                 }
                                 context.startActivity(Intent.createChooser(shareIntent, "Поділитися через"))
                             }
                     )
                 }
 
-
-
-
-                Spacer(Modifier.height(0.dp))
-                val comicsSnapshot = comics
-                val currentComicSnapshot = currentComic
-                if (AppConfig.debugMode.value && comicsSnapshot != null && currentComicSnapshot != null) {
-                    val position = comicsSnapshot.indexOfFirst { it.id == currentComicSnapshot.id }.takeIf { it >= 0 }?.let { comicsSnapshot.size - it } ?: "?"
-                    val total = comicsSnapshot.size
-                    Text(
-                        text = "$position from $total",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    Spacer(Modifier.height(0.dp))
-                }
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                /*Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     if (comic.previousId != null) {
                         TextButton(onClick = {
                             val newComic = comics!!.find { it.id == comic.previousId }
@@ -295,7 +302,7 @@ fun HomePage(selectedTab: (Int) -> Unit,
                             Text("${comic.nextTitle}")
                         }
                     }
-                }
+                }*/
 
                 Row(
                     modifier = Modifier
