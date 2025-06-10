@@ -19,6 +19,13 @@ import androidx.compose.foundation.layout.padding
 import com.norsula.wagner.ui.screens.HomePage
 import com.norsula.wagner.ui.screens.SearchPage
 import com.norsula.wagner.ui.screens.InfoPage
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 
 
 
@@ -29,6 +36,10 @@ import com.norsula.wagner.ui.screens.InfoPage
 
 
 
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
     var selectedTab by remember { mutableStateOf(0) }
@@ -58,11 +69,40 @@ fun MainScreen() {
                     //initialComicId = "2025/05/24/vivi-ta-vagner-priyemni-ta-nepriyemni-syurprizi/"
 
                 )
-                1 -> SearchPage(
-                    comics = comics,
-                    onSelect = { comic -> navigateToHomePageWithComicId(comic.id ?: "") }
-                )
-                2 -> InfoPage()
+                1 -> Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = { Text("Search") },
+                            navigationIcon = {
+                                IconButton(onClick = { selectedTab = 0 }) {
+                                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                                }
+                            }
+                        )
+                    }
+                ) { padding ->
+                    SearchPage(
+                        comics = comics,
+                        onSelect = { comic -> navigateToHomePageWithComicId(comic.id ?: "") },
+                        modifier = Modifier.padding(padding)
+                    )
+                }
+
+                2 -> Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            title = { Text("Info") },
+                            navigationIcon = {
+                                IconButton(onClick = { selectedTab = 0 }) {
+                                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                                }
+                            }
+                        )
+                    }
+                ) { padding ->
+                    InfoPage(modifier = Modifier.padding(padding))
+                }
+
             }
         }
     }

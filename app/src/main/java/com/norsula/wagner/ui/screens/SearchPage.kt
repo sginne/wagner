@@ -27,7 +27,7 @@ import java.util.Locale
 
 
 @Composable
-fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit) {
+fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit,modifier: Modifier = Modifier) {
     var query by remember { mutableStateOf(TextFieldValue("")) }
     var startDateText by remember { mutableStateOf("") }
     var endDateText by remember { mutableStateOf("") }
@@ -71,7 +71,7 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit) {
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(96.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
