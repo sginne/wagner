@@ -17,8 +17,6 @@ import android.widget.TextView
 import androidx.compose.ui.viewinterop.AndroidView
 
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InfoPage(modifier: Modifier = Modifier) {
