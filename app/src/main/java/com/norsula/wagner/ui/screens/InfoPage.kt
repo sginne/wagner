@@ -12,6 +12,10 @@ import androidx.compose.ui.unit.dp
 import com.norsula.wagner.model.fetchWagnerInfoWithCache
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import android.text.Html
+import android.widget.TextView
+import androidx.compose.ui.viewinterop.AndroidView
+
 
 
 
@@ -69,10 +73,11 @@ fun InfoPage(modifier: Modifier = Modifier) {
                         .fillMaxSize()
                         .verticalScroll(scrollState)
                 ) {
-                    Text(
-                        text = wagnerInfo,
-                        modifier = Modifier.padding(16.dp)
-                    )
+                    HtmlText(htmlContent = wagnerInfo ?: "No information available")
+                    //Text(
+                    //    text = wagnerInfo,
+                    //   modifier = Modifier.padding(16.dp)
+                    //)
                     // Add extra space at the bottom
                     Spacer(modifier = Modifier.height(32.dp))
                 }
@@ -83,4 +88,15 @@ fun InfoPage(modifier: Modifier = Modifier) {
             }
         }
     }
+}
+@Composable
+fun HtmlText(htmlContent: String) {
+    AndroidView(
+        factory = { context ->
+            TextView(context).apply {
+                text = Html.fromHtml(htmlContent, Html.FROM_HTML_MODE_COMPACT)
+            }
+        },
+        update = { it.text = Html.fromHtml(htmlContent, Html.FROM_HTML_MODE_COMPACT) }
+    )
 }
