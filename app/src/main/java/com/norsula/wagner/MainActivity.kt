@@ -32,8 +32,6 @@ class MainActivity : ComponentActivity() {
         }
 
         enableEdgeToEdge()
-        window.statusBarColor = android.graphics.Color.TRANSPARENT
-        window.navigationBarColor = android.graphics.Color.TRANSPARENT
 
         setContent {
             WagnerTheme {

@@ -25,7 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 
 
 
@@ -75,7 +75,7 @@ fun MainScreen() {
                             title = { Text("Search") },
                             navigationIcon = {
                                 IconButton(onClick = { selectedTab = 0 }) {
-                                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                                 }
                             }
                         )
@@ -94,7 +94,7 @@ fun MainScreen() {
                             title = { Text("Info") },
                             navigationIcon = {
                                 IconButton(onClick = { selectedTab = 0 }) {
-                                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                                 }
                             }
                         )

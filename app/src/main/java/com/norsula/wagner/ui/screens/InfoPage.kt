@@ -11,7 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.norsula.wagner.model.fetchWagnerInfoWithCache
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import android.text.Html
 import android.widget.TextView
 import androidx.compose.ui.viewinterop.AndroidView
@@ -44,7 +44,7 @@ fun InfoPage(modifier: Modifier = Modifier) {
                 navigationIcon = {
                     IconButton(onClick = { /* Handle back navigation */ }) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
 
