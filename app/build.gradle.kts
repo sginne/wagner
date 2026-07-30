@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -5,6 +8,24 @@ plugins {
 }
 
 android {
+    val keystoreProperties = Properties().apply {
+        load(FileInputStream(rootProject.file("keystore/keystore.properties")))
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+        }
+    }
+
+    buildTypes {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
     compileSdk = 35
     namespace = "com.norsula.wagner"
     composeOptions {
