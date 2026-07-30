@@ -69,7 +69,7 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit,modifier: Modifie
         matchesQuery && inRange
     } ?: emptyList()
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
 
         Spacer(modifier = Modifier.height(96.dp))
 

@@ -29,10 +29,6 @@ class WagnerApp : Application() {
                 ExistingPeriodicWorkPolicy.KEEP,
                 workRequest
             )
-            getWorkInfosForUniqueWorkLiveData("ComicCheckWork")
-                .observeForever { workInfos ->
-                    //println("Work status: ${workInfos?.firstOrNull()?.state}")
-                }
         }
     }
 }

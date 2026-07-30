@@ -38,6 +38,7 @@ fun InfoPage(modifier: Modifier = Modifier) {
     }
 
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = { Text("App Information") },
@@ -71,7 +72,7 @@ fun InfoPage(modifier: Modifier = Modifier) {
                         .fillMaxSize()
                         .verticalScroll(scrollState)
                 ) {
-                    HtmlText(htmlContent = wagnerInfo ?: "No information available")
+                    HtmlText(htmlContent = wagnerInfo)
                     //Text(
                     //    text = wagnerInfo,
                     //   modifier = Modifier.padding(16.dp)
