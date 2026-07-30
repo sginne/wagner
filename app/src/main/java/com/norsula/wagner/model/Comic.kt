@@ -48,44 +48,82 @@ suspend fun fetchComics(): List<Comic> = withContext(Dispatchers.IO) {
 }
 
 suspend fun fetchComicsWithCache(context: Context): List<Comic> = withContext(Dispatchers.IO) {
-    val url = "https://norsula.com/wp-json/custom/v1/comics/"
+    val url = URL("https://norsula.com/wp-json/custom/v1/comics/")
     val cacheDir = File(context.filesDir, "comics_cache")
-    if (!cacheDir.exists()) cacheDir.mkdirs()
+
+    if (!cacheDir.exists() && !cacheDir.mkdirs()) {
+        throw java.io.IOException("Не вдалося створити каталог кешу")
+    }
 
     try {
-        val jsonString = URL(url).readText()
-        val comicsJsonArray = Json.parseToJsonElement(jsonString).jsonArray
+        val connection = url.openConnection() as java.net.HttpURLConnection
+        connection.connectTimeout = 10_000
+        connection.readTimeout = 15_000
+        connection.requestMethod = "GET"
 
-        val result = mutableListOf<Comic>()
+        val status = connection.responseCode
+        if (status !in 200..299) {
+            connection.disconnect()
+            throw java.io.IOException("HTTP $status")
+        }
 
-        for (jsonElement in comicsJsonArray) {
-            val comicObj = jsonElement.jsonObject
-            val num = comicObj["num"]?.jsonPrimitive?.intOrNull ?: continue
+        val jsonString = connection.inputStream.bufferedReader().use { it.readText() }
+        connection.disconnect()
 
-            val comic = Json.decodeFromJsonElement<Comic>(comicObj)
+        val comics = Json.decodeFromString<List<Comic>>(jsonString)
 
+        comics.forEach { comic ->
+            val num = comic.num ?: return@forEach
             val comicDir = File(cacheDir, num.toString())
-            val comicFile = File(comicDir, "comic.json")
 
-            if (!comicFile.exists()) {
-                comicDir.mkdirs()
-                comicFile.writeText(Json.encodeToString(comic))
+            if (!comicDir.exists() && !comicDir.mkdirs()) {
+                throw java.io.IOException("Не вдалося створити кеш для коміксу $num")
             }
 
-            result.add(comic)
+            val comicFile = File(comicDir, "comic.json")
+            val temporaryFile = File(comicDir, "comic.json.tmp")
+
+            temporaryFile.writeText(Json.encodeToString(comic))
+
+            if (comicFile.exists() && !comicFile.delete()) {
+                temporaryFile.delete()
+                throw java.io.IOException("Не вдалося оновити кеш коміксу $num")
+            }
+
+            if (!temporaryFile.renameTo(comicFile)) {
+                temporaryFile.delete()
+                throw java.io.IOException("Не вдалося зберегти кеш коміксу $num")
+            }
         }
-        result
-    } catch (e: Exception) {
-        // fallback: load all from cache if network fails
-        val cachedComics = cacheDir.listFiles()?.mapNotNull { dir ->
-            File(dir, "comic.json").takeIf { it.exists() }?.readText()?.let {
+
+        Log.d("fetchComics", "Loaded ${comics.size} comics from network")
+        comics
+    } catch (networkError: Exception) {
+        Log.e("fetchComics", "Network loading failed, trying cache", networkError)
+
+        val cachedComics = cacheDir.listFiles()
+            ?.mapNotNull { dir ->
+                val comicFile = File(dir, "comic.json")
+                if (!comicFile.isFile) return@mapNotNull null
+
                 try {
-                    Json.decodeFromString<Comic>(it)
-                } catch (_: Exception) {
+                    Json.decodeFromString<Comic>(comicFile.readText())
+                } catch (cacheError: Exception) {
+                    Log.e("fetchComics", "Invalid cache file: ${comicFile.path}", cacheError)
                     null
                 }
             }
-        } ?: emptyList()
+            ?.sortedByDescending { it.num ?: Int.MIN_VALUE }
+            .orEmpty()
+
+        if (cachedComics.isEmpty()) {
+            throw java.io.IOException(
+                "Не вдалося завантажити комікси, кеш порожній",
+                networkError
+            )
+        }
+
+        Log.d("fetchComics", "Loaded ${cachedComics.size} comics from cache")
         cachedComics
     }
 }

@@ -4,8 +4,10 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 fun formatDate(dateStr: String): String {
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val date = LocalDate.parse(dateStr, formatter)
+    val date = LocalDate.parse(
+        dateStr.trim().take(10),
+        DateTimeFormatter.ISO_LOCAL_DATE
+    )
     val day = date.dayOfMonth
     val month = when (date.monthValue) {
         1 -> "січня"

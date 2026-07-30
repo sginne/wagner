@@ -99,24 +99,6 @@ fun HomePage(selectedTab: (Int) -> Unit,
         }
         else -> {
             val comic = currentComic!!
-            val refreshTrigger by remember { mutableStateOf(0) }
-
-            LaunchedEffect(refreshTrigger) {
-                try {
-                    comics = fetchComicsWithCache(context)
-                    val comicsList = comics
-                    if (currentComic == null && !comicsList.isNullOrEmpty()) {
-                        currentComic = comicsList.firstOrNull { it.id == initialComicId } ?: comicsList.firstOrNull()
-                    }
-                    error = null
-                } catch (e: Exception) {
-                    error = "Помилка оновлення: ${e.localizedMessage}"
-                }
-            }
-
-
-
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
