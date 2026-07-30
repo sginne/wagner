@@ -154,17 +154,21 @@ fun HomePage(selectedTab: (Int) -> Unit,
                                 .height(280.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            it.nextTitle?.let { title ->
-                                Text(
-                                    text = "   <${title
-                                        .removePrefix(AppConfig.prefix)
-                                        .trim()
-                                        .replace(" ", "<")}<",
-                                    fontSize = 12.sp,
-                                    modifier = Modifier
-                                        .padding(end = 4.dp)
-                                        .width(5.dp)
-                                )
+                            Box(
+                                modifier = Modifier
+                                    .width(12.dp)
+                                    .fillMaxHeight(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                it.nextTitle?.let { title ->
+                                    Text(
+                                        text = title
+                                            .removePrefix(AppConfig.prefix)
+                                            .trim(),
+                                        fontSize = 12.sp,
+                                        modifier = Modifier.width(10.dp)
+                                    )
+                                }
                             }
 
                             Image(
@@ -180,20 +184,24 @@ fun HomePage(selectedTab: (Int) -> Unit,
                                             AppConfig.debugMode.value = true
                                         }
                                     },
-                                contentScale = ContentScale.Crop
+                                contentScale = ContentScale.Fit
                             )
 
-                            it.previousTitle?.let { title ->
-                                Text(
-                                    text = "   >${title
-                                        .removePrefix(AppConfig.prefix)
-                                        .trim()
-                                        .replace(" ", ">")}>",
-                                    fontSize = 12.sp,
-                                    modifier = Modifier
-                                        .padding(end = 4.dp)
-                                        .width(5.dp)
-                                )
+                            Box(
+                                modifier = Modifier
+                                    .width(12.dp)
+                                    .fillMaxHeight(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                it.previousTitle?.let { title ->
+                                    Text(
+                                        text = title
+                                            .removePrefix(AppConfig.prefix)
+                                            .trim(),
+                                        fontSize = 12.sp,
+                                        modifier = Modifier.width(10.dp)
+                                    )
+                                }
                             }
                         }
                     }
