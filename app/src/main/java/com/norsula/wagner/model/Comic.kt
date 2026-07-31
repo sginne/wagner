@@ -10,6 +10,9 @@ import kotlinx.serialization.json.Json
 import java.net.URLEncoder
 import java.net.URL
 import java.nio.charset.StandardCharsets
+import java.nio.file.AtomicMoveNotSupportedException
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.io.File
 import kotlinx.serialization.json.*
 import kotlinx.serialization.encodeToString
@@ -85,14 +88,21 @@ suspend fun fetchComicsWithCache(context: Context): List<Comic> = withContext(Di
 
             temporaryFile.writeText(Json.encodeToString(comic))
 
-            if (comicFile.exists() && !comicFile.delete()) {
+            try {
+                Files.move(
+                    temporaryFile.toPath(),
+                    comicFile.toPath(),
+                    StandardCopyOption.REPLACE_EXISTING,
+                    StandardCopyOption.ATOMIC_MOVE
+                )
+            } catch (_: AtomicMoveNotSupportedException) {
+                Files.move(
+                    temporaryFile.toPath(),
+                    comicFile.toPath(),
+                    StandardCopyOption.REPLACE_EXISTING
+                )
+            } finally {
                 temporaryFile.delete()
-                throw java.io.IOException("Не вдалося оновити кеш коміксу $num")
-            }
-
-            if (!temporaryFile.renameTo(comicFile)) {
-                temporaryFile.delete()
-                throw java.io.IOException("Не вдалося зберегти кеш коміксу $num")
             }
         }
 
