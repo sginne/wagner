@@ -31,7 +31,7 @@ class ComicCheckWorker(
                 latestComic?.let { comic ->
                     NotificationHelper.showNewComicNotification(applicationContext, comic)
                     comic.num?.let { num ->
-                        AppConfig.lastCheckedNum.value = num
+                        AppConfig.lastCheckedNum.intValue = num
                         AppConfig.save(applicationContext)
                         LogUtil.debug("Updated lastCheckedNum to $num and saved")
                     }
@@ -48,7 +48,7 @@ class ComicCheckWorker(
 
     private fun checkForNewComic(comics: List<Comic>): Boolean {
         val latestComic = comics.maxByOrNull { it.num ?: 0 } ?: return false
-        val lastSaved = AppConfig.lastCheckedNum.value
+        val lastSaved = AppConfig.lastCheckedNum.intValue
         val latestNum = latestComic.num ?: 0
 
         LogUtil.debug("Comparing: latest = $latestNum, saved = $lastSaved")

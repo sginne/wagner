@@ -13,16 +13,16 @@ object AppConfig {
     fun load(context: Context) {
         val prefs = context.getSharedPreferences("app_config", Context.MODE_PRIVATE)
         debugMode.value = prefs.getBoolean("debugMode", true)
-        comicClickCount.value = prefs.getInt("comicClickCount", 0)
-        lastCheckedNum.value = prefs.getInt("lastCheckedNum", 139)
+        comicClickCount.intValue = prefs.getInt("comicClickCount", 0)
+        lastCheckedNum.intValue = prefs.getInt("lastCheckedNum", 139)
     }
 
     fun save(context: Context) {
         val prefs = context.getSharedPreferences("app_config", Context.MODE_PRIVATE)
         prefs.edit()
             .putBoolean("debugMode", debugMode.value)
-            .putInt("comicClickCount", comicClickCount.value)
-            .putInt("lastCheckedNum", lastCheckedNum.value)
+            .putInt("comicClickCount", comicClickCount.intValue)
+            .putInt("lastCheckedNum", lastCheckedNum.intValue)
             .apply()
     }
 }

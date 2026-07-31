@@ -60,7 +60,7 @@ fun HomePage(selectedTab: (Int) -> Unit,
     var currentComic by remember { mutableStateOf<Comic?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
-    var clicks by remember { mutableIntStateOf(AppConfig.comicClickCount.value) }
+    var clicks by remember { mutableIntStateOf(AppConfig.comicClickCount.intValue) }
     //var debugMode = remember { mutableStateOf(true) } // в AppConfig
     var swipeDirection by remember { mutableIntStateOf(0) } // 1 = next, -1 = prev
 
@@ -179,7 +179,7 @@ fun HomePage(selectedTab: (Int) -> Unit,
                                     .fillMaxHeight()
                                     .clickable {
                                         clicks++
-                                        AppConfig.comicClickCount.value = clicks
+                                        AppConfig.comicClickCount.intValue = clicks
                                         if (clicks >= 7) {
                                             AppConfig.debugMode.value = true
                                         }

@@ -93,7 +93,7 @@ fun DevPanel() {
 
         Button(onClick = {
             AppConfig.debugMode.value = false
-            AppConfig.comicClickCount.value = 0
+            AppConfig.comicClickCount.intValue = 0
         })
         {
             Text("Вимкнути debugMode")
