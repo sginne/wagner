@@ -51,15 +51,26 @@ suspend fun fetchComics(): List<Comic> = withContext(Dispatchers.IO) {
 }
 
 suspend fun fetchComicsWithCache(context: Context): List<Comic> = withContext(Dispatchers.IO) {
-    val url = URL("https://norsula.com/wp-json/custom/v1/comics/")
     val cacheDir = File(context.filesDir, "comics_cache")
 
+    fetchOrLoadCachedComics(cacheDir, fetch = {
+        fetchComicsFromUrl(URL("https://norsula.com/wp-json/custom/v1/comics/"))
+    })
+}
+
+internal fun fetchOrLoadCachedComics(
+    cacheDir: File,
+    fetch: () -> List<Comic>,
+    logError: (String, Exception) -> Unit = { message, error ->
+        Log.e("fetchComics", message, error)
+    }
+): List<Comic> {
     if (!cacheDir.exists() && !cacheDir.mkdirs()) {
         throw java.io.IOException("Не вдалося створити каталог кешу")
     }
 
-    try {
-        val comics = fetchComicsFromUrl(url)
+    return try {
+        val comics = fetch()
 
         comics.forEach { comic ->
             val num = comic.num ?: return@forEach
@@ -90,18 +101,19 @@ suspend fun fetchComicsWithCache(context: Context): List<Comic> = withContext(Di
                     )
                 }
             } catch (cacheError: Exception) {
-                Log.e("fetchComics", "Failed to cache comic $num", cacheError)
+                logError("Failed to cache comic $num", cacheError)
             } finally {
                 temporaryFile.delete()
             }
         }
 
-        Log.d("fetchComics", "Loaded ${comics.size} comics from network")
         comics
     } catch (networkError: Exception) {
-        Log.e("fetchComics", "Network loading failed, trying cache", networkError)
+        logError("Network loading failed, trying cache", networkError)
 
-        val cachedComics = loadCachedComics(cacheDir)
+        val cachedComics = loadCachedComics(cacheDir) { path, error ->
+            logError("Invalid cache file: $path", error)
+        }
 
         if (cachedComics.isEmpty()) {
             throw java.io.IOException(
@@ -110,7 +122,6 @@ suspend fun fetchComicsWithCache(context: Context): List<Comic> = withContext(Di
             )
         }
 
-        Log.d("fetchComics", "Loaded ${cachedComics.size} comics from cache")
         cachedComics
     }
 }
