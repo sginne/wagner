@@ -37,15 +37,17 @@ import com.norsula.wagner.model.Comic
 
 
 
+@OptIn(coil.annotation.ExperimentalCoilApi::class)
 fun calculateCoilCacheItems(context: Context): Int {
     val diskCache = context.imageLoader.diskCache ?: return 0
-    val dir = diskCache.directory ?: return 0
+    val dir = diskCache.directory
     val file = File(dir.toString())
     return file.listFiles()?.size ?: 0
 }
 
 
 
+@OptIn(coil.annotation.ExperimentalCoilApi::class)
 fun clearComicCache(context: Context) {
     val cacheDir = File(context.filesDir, "comics_cache")
     cacheDir.deleteRecursively()
