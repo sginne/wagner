@@ -60,19 +60,17 @@ suspend fun fetchComicsWithCache(context: Context): List<Comic> = withContext(Di
 
     try {
         val connection = url.openConnection() as java.net.HttpURLConnection
-        connection.connectTimeout = 10_000
+        try {
+            connection.connectTimeout = 10_000
         connection.readTimeout = 15_000
         connection.requestMethod = "GET"
 
         val status = connection.responseCode
         if (status !in 200..299) {
-            connection.disconnect()
             throw java.io.IOException("HTTP $status")
         }
 
         val jsonString = connection.inputStream.bufferedReader().use { it.readText() }
-        connection.disconnect()
-
         val comics = Json.decodeFromString<List<Comic>>(jsonString)
 
         comics.forEach { comic ->
@@ -110,8 +108,11 @@ suspend fun fetchComicsWithCache(context: Context): List<Comic> = withContext(Di
             }
         }
 
-        Log.d("fetchComics", "Loaded ${comics.size} comics from network")
-        comics
+            Log.d("fetchComics", "Loaded ${comics.size} comics from network")
+            comics
+        } finally {
+            connection.disconnect()
+        }
     } catch (networkError: Exception) {
         Log.e("fetchComics", "Network loading failed, trying cache", networkError)
 
