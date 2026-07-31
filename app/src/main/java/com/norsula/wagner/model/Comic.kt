@@ -59,19 +59,7 @@ suspend fun fetchComicsWithCache(context: Context): List<Comic> = withContext(Di
     }
 
     try {
-        val connection = url.openConnection() as java.net.HttpURLConnection
-        try {
-            connection.connectTimeout = 10_000
-        connection.readTimeout = 15_000
-        connection.requestMethod = "GET"
-
-        val status = connection.responseCode
-        if (status !in 200..299) {
-            throw java.io.IOException("HTTP $status")
-        }
-
-        val jsonString = connection.inputStream.bufferedReader().use { it.readText() }
-        val comics = Json.decodeFromString<List<Comic>>(jsonString)
+        val comics = fetchComicsFromUrl(url)
 
         comics.forEach { comic ->
             val num = comic.num ?: return@forEach
@@ -108,11 +96,8 @@ suspend fun fetchComicsWithCache(context: Context): List<Comic> = withContext(Di
             }
         }
 
-            Log.d("fetchComics", "Loaded ${comics.size} comics from network")
-            comics
-        } finally {
-            connection.disconnect()
-        }
+        Log.d("fetchComics", "Loaded ${comics.size} comics from network")
+        comics
     } catch (networkError: Exception) {
         Log.e("fetchComics", "Network loading failed, trying cache", networkError)
 
@@ -151,3 +136,24 @@ internal fun loadCachedComics(
         }
         ?.sortedByDescending { it.num ?: Int.MIN_VALUE }
         .orEmpty()
+
+
+internal fun fetchComicsFromUrl(url: URL): List<Comic> {
+    val connection = url.openConnection() as java.net.HttpURLConnection
+
+    return try {
+        connection.connectTimeout = 10_000
+        connection.readTimeout = 15_000
+        connection.requestMethod = "GET"
+
+        val status = connection.responseCode
+        if (status !in 200..299) {
+            throw java.io.IOException("HTTP $status")
+        }
+
+        val jsonString = connection.inputStream.bufferedReader().use { it.readText() }
+        Json.decodeFromString(jsonString)
+    } finally {
+        connection.disconnect()
+    }
+}
