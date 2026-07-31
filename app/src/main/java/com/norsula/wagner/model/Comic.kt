@@ -116,20 +116,7 @@ suspend fun fetchComicsWithCache(context: Context): List<Comic> = withContext(Di
     } catch (networkError: Exception) {
         Log.e("fetchComics", "Network loading failed, trying cache", networkError)
 
-        val cachedComics = cacheDir.listFiles()
-            ?.mapNotNull { dir ->
-                val comicFile = File(dir, "comic.json")
-                if (!comicFile.isFile) return@mapNotNull null
-
-                try {
-                    Json.decodeFromString<Comic>(comicFile.readText())
-                } catch (cacheError: Exception) {
-                    Log.e("fetchComics", "Invalid cache file: ${comicFile.path}", cacheError)
-                    null
-                }
-            }
-            ?.sortedByDescending { it.num ?: Int.MIN_VALUE }
-            .orEmpty()
+        val cachedComics = loadCachedComics(cacheDir)
 
         if (cachedComics.isEmpty()) {
             throw java.io.IOException(
@@ -142,3 +129,25 @@ suspend fun fetchComicsWithCache(context: Context): List<Comic> = withContext(Di
         cachedComics
     }
 }
+
+
+internal fun loadCachedComics(
+    cacheDir: File,
+    logInvalidFile: (String, Exception) -> Unit = { path, error ->
+        Log.e("fetchComics", "Invalid cache file: $path", error)
+    }
+): List<Comic> =
+    cacheDir.listFiles()
+        ?.mapNotNull { dir ->
+            val comicFile = File(dir, "comic.json")
+            if (!comicFile.isFile) return@mapNotNull null
+
+            try {
+                Json.decodeFromString<Comic>(comicFile.readText())
+            } catch (cacheError: Exception) {
+                logInvalidFile(comicFile.path, cacheError)
+                null
+            }
+        }
+        ?.sortedByDescending { it.num ?: Int.MIN_VALUE }
+        .orEmpty()
