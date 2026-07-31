@@ -4,6 +4,7 @@ package com.norsula.wagner.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -42,7 +43,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
-    var selectedTab by remember { mutableStateOf(0) }
+    var selectedTab by remember { mutableIntStateOf(0) }
     var comics by remember { mutableStateOf<List<Comic>?>(null) }
 
     var selectedComicId by remember { mutableStateOf<String?>(null) }

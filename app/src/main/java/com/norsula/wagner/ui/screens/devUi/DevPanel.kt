@@ -58,9 +58,9 @@ fun clearComicCache(context: Context) {
 fun DevPanel() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var cacheSize by remember { mutableStateOf(0L) }
-    var cacheItems by remember { mutableStateOf(0) }
-    var coilCacheItems by remember { mutableStateOf(0) }
+    var cacheSize by remember { mutableLongStateOf(0L) }
+    var cacheItems by remember { mutableIntStateOf(0) }
+    var coilCacheItems by remember { mutableIntStateOf(0) }
 
 
 

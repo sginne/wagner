@@ -2,11 +2,12 @@ package com.norsula.wagner
 
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 
 object AppConfig {
     var debugMode = mutableStateOf(false)
-    var comicClickCount = mutableStateOf(0)
-    var lastCheckedNum = mutableStateOf(139)
+    var comicClickCount = mutableIntStateOf(0)
+    var lastCheckedNum = mutableIntStateOf(139)
     const val prefix = "Віві та Вагнер - "
 
     fun load(context: Context) {
