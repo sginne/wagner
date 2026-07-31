@@ -86,21 +86,25 @@ suspend fun fetchComicsWithCache(context: Context): List<Comic> = withContext(Di
             val comicFile = File(comicDir, "comic.json")
             val temporaryFile = File(comicDir, "comic.json.tmp")
 
-            temporaryFile.writeText(Json.encodeToString(comic))
-
             try {
-                Files.move(
-                    temporaryFile.toPath(),
-                    comicFile.toPath(),
-                    StandardCopyOption.REPLACE_EXISTING,
-                    StandardCopyOption.ATOMIC_MOVE
-                )
-            } catch (_: AtomicMoveNotSupportedException) {
-                Files.move(
-                    temporaryFile.toPath(),
-                    comicFile.toPath(),
-                    StandardCopyOption.REPLACE_EXISTING
-                )
+                temporaryFile.writeText(Json.encodeToString(comic))
+
+                try {
+                    Files.move(
+                        temporaryFile.toPath(),
+                        comicFile.toPath(),
+                        StandardCopyOption.REPLACE_EXISTING,
+                        StandardCopyOption.ATOMIC_MOVE
+                    )
+                } catch (_: AtomicMoveNotSupportedException) {
+                    Files.move(
+                        temporaryFile.toPath(),
+                        comicFile.toPath(),
+                        StandardCopyOption.REPLACE_EXISTING
+                    )
+                }
+            } catch (cacheError: Exception) {
+                Log.e("fetchComics", "Failed to cache comic $num", cacheError)
             } finally {
                 temporaryFile.delete()
             }
