@@ -16,10 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.imageLoader
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -27,9 +25,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import kotlinx.coroutines.withContext
-import java.nio.file.Files
-import java.nio.file.Path
-import okio.Path.Companion.toOkioPath
 import com.norsula.wagner.AppConfig
 import com.norsula.wagner.notification.NotificationHelper
 import com.norsula.wagner.model.Comic
@@ -55,7 +50,7 @@ fun clearComicCache(context: Context) {
 }
 
 @Composable
-fun DevPanel() {
+fun DevPanel(comics: List<Comic>) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var cacheSize by remember { mutableLongStateOf(0L) }
@@ -132,15 +127,14 @@ fun DevPanel() {
             }) {
                 Text("Оновити")
             }
-            Button(onClick = {
-                NotificationHelper.showNewComicNotification(
-                    context,
-                    comic = Comic(
-                        id = "test",
-                        title = "Тест",
-                        image = "https://example.com/test.jpg"
-                    )
-                )            }) {
+            Button(
+                enabled = comics.isNotEmpty(),
+                onClick = {
+                    comics.firstOrNull()?.let { comic ->
+                        NotificationHelper.showNewComicNotification(context, comic)
+                    }
+                }
+            ) {
                 Text("Тест сповіщення")
             }
 

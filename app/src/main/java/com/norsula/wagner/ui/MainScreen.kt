@@ -42,11 +42,11 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(initialComicId: String? = null) {
     var selectedTab by remember { mutableIntStateOf(0) }
     var comics by remember { mutableStateOf<List<Comic>?>(null) }
 
-    var selectedComicId by remember { mutableStateOf<String?>(null) }
+    var selectedComicId by remember { mutableStateOf(initialComicId) }
 
     val navigateToHomePageWithComicId = remember {
         { id: String ->

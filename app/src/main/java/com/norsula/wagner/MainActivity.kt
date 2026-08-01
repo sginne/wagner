@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.norsula.wagner.ui.MainScreen
 import com.norsula.wagner.theme.WagnerTheme
+import com.norsula.wagner.notification.NotificationHelper
 import android.os.Build
 import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
@@ -35,7 +36,11 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             WagnerTheme {
-                MainScreen()
+                MainScreen(
+                    initialComicId = intent.getStringExtra(
+                        NotificationHelper.EXTRA_COMIC_ID
+                    )
+                )
             }
         }
     }

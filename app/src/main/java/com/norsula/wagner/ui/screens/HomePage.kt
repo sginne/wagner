@@ -127,7 +127,7 @@ fun HomePage(selectedTab: (Int) -> Unit,
                 verticalArrangement = Arrangement.Top
             ){
                 if (AppConfig.debugMode.value) {
-                    DevPanel()
+                    DevPanel(comics.orEmpty())
                     Spacer(Modifier.height(0.dp))
                 }
 
