@@ -1,5 +1,10 @@
 package com.norsula.wagner.ui.screens
 
+import com.norsula.wagner.BuildConfig
+
+
+
+
 import android.content.Intent
 import android.net.Uri
 
@@ -126,7 +131,7 @@ fun HomePage(selectedTab: (Int) -> Unit,
                     },
                 verticalArrangement = Arrangement.Top
             ){
-                if (AppConfig.debugMode.value) {
+                if (BuildConfig.DEBUG && AppConfig.debugMode.value) {
                     DevPanel(comics.orEmpty())
                     Spacer(Modifier.height(0.dp))
                 }
@@ -180,7 +185,7 @@ fun HomePage(selectedTab: (Int) -> Unit,
                                     .clickable {
                                         clicks++
                                         AppConfig.comicClickCount.intValue = clicks
-                                        if (clicks >= 7) {
+                                        if (BuildConfig.DEBUG && clicks >= 7) {
                                             AppConfig.debugMode.value = true
                                         }
                                     },

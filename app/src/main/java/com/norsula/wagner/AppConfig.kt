@@ -12,7 +12,7 @@ object AppConfig {
 
     fun load(context: Context) {
         val prefs = context.getSharedPreferences("app_config", Context.MODE_PRIVATE)
-        debugMode.value = prefs.getBoolean("debugMode", true)
+        debugMode.value = BuildConfig.DEBUG && prefs.getBoolean("debugMode", false)
         comicClickCount.intValue = prefs.getInt("comicClickCount", 0)
         lastCheckedNum.intValue = prefs.getInt("lastCheckedNum", 139)
     }
