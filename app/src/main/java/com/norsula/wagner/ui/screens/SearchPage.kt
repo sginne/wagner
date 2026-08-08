@@ -12,6 +12,7 @@ import com.norsula.wagner.model.Comic
 import androidx.compose.foundation.clickable
 import com.norsula.wagner.AppConfig
 import com.norsula.wagner.utils.formatDate
+import com.norsula.wagner.utils.parseComicDate
 import androidx.compose.ui.Alignment
 import java.time.LocalDate
 
@@ -62,7 +63,7 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit,modifier: Modifie
     )
 
     val filteredComics = comics?.filter {
-        val date = it.publishedDate?.let { d -> runCatching { LocalDate.parse(d) }.getOrNull() }
+        val date = parseComicDate(it.publishedDate)
         val matchesQuery = it.title.contains(query.text, ignoreCase = true)
         val inRange = (startDate == null || (date != null && date >= startDate)) &&
                 (endDate == null || (date != null && date <= endDate))

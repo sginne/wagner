@@ -33,6 +33,8 @@ import androidx.compose.foundation.clickable
 
 
 import coil.compose.rememberAsyncImagePainter
+import coil.imageLoader
+import coil.request.ImageRequest
 
 import com.norsula.wagner.model.*
 import androidx.compose.ui.text.font.FontWeight
@@ -68,6 +70,7 @@ fun HomePage(selectedTab: (Int) -> Unit,
     var clicks by remember { mutableIntStateOf(AppConfig.comicClickCount.intValue) }
     //var debugMode = remember { mutableStateOf(true) } // в AppConfig
     var swipeDirection by remember { mutableIntStateOf(0) } // 1 = next, -1 = prev
+    var horizontalDrag by remember { mutableFloatStateOf(0f) }
 
 
 
@@ -84,6 +87,22 @@ fun HomePage(selectedTab: (Int) -> Unit,
         } catch (e: Exception) {
             error = "Помилка завантаження: ${e.localizedMessage}"
         }
+    }
+
+    LaunchedEffect(currentComic, comics) {
+        val loadedComics = comics.orEmpty()
+        val comic = currentComic ?: return@LaunchedEffect
+
+        listOfNotNull(comic.previousId, comic.nextId)
+            .distinct()
+            .mapNotNull { id -> loadedComics.find { it.id == id } }
+            .forEach { neighbour ->
+                context.imageLoader.enqueue(
+                    ImageRequest.Builder(context)
+                        .data(neighbour.image)
+                        .build()
+                )
+            }
     }
 
     when {
@@ -110,24 +129,31 @@ fun HomePage(selectedTab: (Int) -> Unit,
                     .verticalScroll(rememberScrollState())
                     .padding(0.dp)
                     .pointerInput(currentComic, comics) {
-                        detectHorizontalDragGestures { change, dragAmount ->
-                            if (dragAmount > 0) { // swipe right - NEXT comic
-                                swipeDirection = 1
-                                currentComic?.nextId?.let { nextId ->
-                                    comics?.find { it.id == nextId }?.let {
-                                        currentComic = it
+                        detectHorizontalDragGestures(
+                            onDragStart = { horizontalDrag = 0f },
+                            onHorizontalDrag = { change, dragAmount ->
+                                horizontalDrag += dragAmount
+                                change.consume()
+                            },
+                            onDragEnd = {
+                                when {
+                                    horizontalDrag > 80f -> {
+                                        swipeDirection = 1
+                                        currentComic?.nextId?.let { id ->
+                                            comics?.find { it.id == id }?.let { currentComic = it }
+                                        }
+                                    }
+                                    horizontalDrag < -80f -> {
+                                        swipeDirection = -1
+                                        currentComic?.previousId?.let { id ->
+                                            comics?.find { it.id == id }?.let { currentComic = it }
+                                        }
                                     }
                                 }
-                            } else if (dragAmount < 0) { // swipe left - PREVIOUS comic
-                                swipeDirection = -1
-                                currentComic?.previousId?.let { prevId ->
-                                    comics?.find { it.id == prevId }?.let {
-                                        currentComic = it
-                                    }
-                                }
-                            }
-                            change.consume()
-                        }
+                                horizontalDrag = 0f
+                            },
+                            onDragCancel = { horizontalDrag = 0f }
+                        )
                     },
                 verticalArrangement = Arrangement.Top
             ){

@@ -3,11 +3,16 @@ package com.norsula.wagner.utils
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+fun parseComicDate(dateStr: String?): LocalDate? =
+    dateStr
+        ?.trim()
+        ?.take(10)
+        ?.let { runCatching { LocalDate.parse(it, DateTimeFormatter.ISO_LOCAL_DATE) }.getOrNull() }
+
 fun formatDate(dateStr: String): String {
-    val date = LocalDate.parse(
-        dateStr.trim().take(10),
-        DateTimeFormatter.ISO_LOCAL_DATE
-    )
+    val date = requireNotNull(parseComicDate(dateStr)) {
+        "Invalid comic date: $dateStr"
+    }
     val day = date.dayOfMonth
     val month = when (date.monthValue) {
         1 -> "січня"
