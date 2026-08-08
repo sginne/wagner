@@ -62,9 +62,15 @@ import androidx.compose.animation.ExperimentalAnimationApi
 @Composable
 fun HomePage(selectedTab: (Int) -> Unit,
              onComicsLoaded: (List<Comic>)-> Unit,
-             initialComicId: String? = null) {
-    var comics by remember { mutableStateOf<List<Comic>?>(null) }
-    var currentComic by remember { mutableStateOf<Comic?>(null) }
+             initialComicId: String? = null,
+             cachedComics: List<Comic>? = null) {
+    var comics by remember { mutableStateOf(cachedComics) }
+    var currentComic by remember {
+        mutableStateOf(
+            cachedComics?.find { it.id == initialComicId }
+                ?: cachedComics?.firstOrNull()
+        )
+    }
     var error by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     var clicks by remember { mutableIntStateOf(AppConfig.comicClickCount.intValue) }
@@ -75,6 +81,8 @@ fun HomePage(selectedTab: (Int) -> Unit,
 
 
     LaunchedEffect(Unit) {
+        if (comics != null) return@LaunchedEffect
+
         try {
             val loadedComics = fetchComicsWithCache(context)
             onComicsLoaded(loadedComics) // виклик callback, передаємо список коміксів в MainScreen

@@ -72,8 +72,6 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit,modifier: Modifie
 
     Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
 
-        Spacer(modifier = Modifier.height(96.dp))
-
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -122,8 +120,13 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit,modifier: Modifie
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        LazyColumn {
-            items(filteredComics) { comic ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentPadding = PaddingValues(bottom = 16.dp)
+        ) {
+            items(filteredComics, key = { it.id ?: it.title }) { comic ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -134,7 +137,8 @@ fun SearchPage(comics: List<Comic>?, onSelect: (Comic) -> Unit,modifier: Modifie
                 ) {
                     Text(
                         text = comic.title.removePrefix(AppConfig.prefix).trim(),
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.weight(1f)
                     )
                     Text(
                         text = comic.publishedDate?.let { formatDate(it) } ?: "невідомо",

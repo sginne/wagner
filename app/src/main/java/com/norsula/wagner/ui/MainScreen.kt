@@ -65,7 +65,8 @@ fun MainScreen(initialComicId: String? = null) {
                 0 -> HomePage(
                     selectedTab = { selectedTab = it },
                     onComicsLoaded = { comics = it },
-                    initialComicId = selectedComicId
+                    initialComicId = selectedComicId,
+                    cachedComics = comics
 
                     //initialComicId = "2025/05/24/vivi-ta-vagner-priyemni-ta-nepriyemni-syurprizi/"
 
