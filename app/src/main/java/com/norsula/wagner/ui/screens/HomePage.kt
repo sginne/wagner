@@ -364,13 +364,27 @@ fun HomePage(selectedTab: (Int) -> Unit,
                             contentAlignment = Alignment.Center
                         ) {
                             if (item != null) {
+                                Column(
+                                    modifier = Modifier.fillMaxSize(),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
                                     Image(
                                         painter = rememberAsyncImagePainter(item.image),
                                         contentDescription = item.title,
-                                        modifier = Modifier.fillMaxSize(),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .fillMaxWidth(),
                                         contentScale = ContentScale.Fit
                                     )
-                                } else {
+                                    Text(
+                                        text = item.title.removePrefix("Віві та Вагнер – "),
+                                        modifier = Modifier.padding(horizontal = 4.dp),
+                                        textAlign = TextAlign.Center,
+                                        maxLines = 2,
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                }
+                            } else {
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         verticalArrangement = Arrangement.Center
