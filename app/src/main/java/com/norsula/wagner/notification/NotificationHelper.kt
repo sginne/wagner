@@ -6,6 +6,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.media.AudioAttributes
+import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -17,20 +19,15 @@ import com.norsula.wagner.MainActivity
 import com.norsula.wagner.R
 import com.norsula.wagner.model.Comic
 import com.norsula.wagner.utils.LogUtil
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 object NotificationHelper {
     const val EXTRA_COMIC_ID = "comic_id"
 
-    private const val CHANNEL_ID = "new_comic_channel"
+    private const val CHANNEL_ID = "new_comic_channel_grunt"
     private const val NOTIFICATION_ID = 414232
 
-    fun showNewComicNotification(context: Context, comic: Comic) {
-        CoroutineScope(Dispatchers.IO).launch {
-            showNotification(context.applicationContext, comic)
-        }
+    suspend fun showNewComicNotification(context: Context, comic: Comic) {
+        showNotification(context.applicationContext, comic)
     }
 
     private suspend fun showNotification(context: Context, comic: Comic) {
@@ -60,21 +57,28 @@ object NotificationHelper {
             null
         }
 
+        val soundUri = Uri.parse(
+            "android.resource://${context.packageName}/${R.raw.comic_grunt}"
+        )
+
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(comic.title)
+            .setContentText("Новий комікс")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
+            .setSound(soundUri)
 
         if (bitmap != null) {
-            builder
-                .setLargeIcon(bitmap)
-                .setStyle(
-                    NotificationCompat.BigPictureStyle()
-                        .bigPicture(bitmap)
-                        .bigLargeIcon(null as Bitmap?)
-                )
+            builder.setStyle(
+                NotificationCompat.BigPictureStyle()
+                    .bigPicture(bitmap)
+                    .bigLargeIcon(null as Bitmap?)
+                    .setBigContentTitle(comic.title)
+                    .setSummaryText("Новий комікс")
+            )
         } else {
             builder.setStyle(
                 NotificationCompat.BigTextStyle()
@@ -95,11 +99,26 @@ object NotificationHelper {
 
     private fun createChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val soundUri = Uri.parse(
+                "android.resource://${context.packageName}/${R.raw.comic_grunt}"
+            )
+            val audioAttributes = AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build()
+
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 context.getString(R.string.notification_channel_new_comics),
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = context.getString(
+                    R.string.notification_channel_new_comics
+                )
+                setSound(soundUri, audioAttributes)
+                enableVibration(true)
+            }
+
             context.getSystemService(NotificationManager::class.java)
                 .createNotificationChannel(channel)
         }

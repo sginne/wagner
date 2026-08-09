@@ -131,7 +131,9 @@ fun DevPanel(comics: List<Comic>) {
                 enabled = comics.isNotEmpty(),
                 onClick = {
                     comics.firstOrNull()?.let { comic ->
-                        NotificationHelper.showNewComicNotification(context, comic)
+                        scope.launch {
+                            NotificationHelper.showNewComicNotification(context, comic)
+                        }
                     }
                 }
             ) {
