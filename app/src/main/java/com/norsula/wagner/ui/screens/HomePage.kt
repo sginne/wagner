@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.clickable
 
@@ -42,6 +43,10 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.animation.core.Animatable
+import kotlinx.coroutines.launch
 
 
 //import java.time.LocalDate
@@ -75,8 +80,9 @@ fun HomePage(selectedTab: (Int) -> Unit,
     val context = LocalContext.current
     var clicks by remember { mutableIntStateOf(AppConfig.comicClickCount.intValue) }
     //var debugMode = remember { mutableStateOf(true) } // в AppConfig
-    var swipeDirection by remember { mutableIntStateOf(0) } // 1 = next, -1 = prev
-    var horizontalDrag by remember { mutableFloatStateOf(0f) }
+    var dragOffset by remember { mutableFloatStateOf(0f) }
+    var sliderWidth by remember { mutableFloatStateOf(1f) }
+    val sliderScope = rememberCoroutineScope()
 
 
 
@@ -135,34 +141,7 @@ fun HomePage(selectedTab: (Int) -> Unit,
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(0.dp)
-                    .pointerInput(currentComic, comics) {
-                        detectHorizontalDragGestures(
-                            onDragStart = { horizontalDrag = 0f },
-                            onHorizontalDrag = { change, dragAmount ->
-                                horizontalDrag += dragAmount
-                                change.consume()
-                            },
-                            onDragEnd = {
-                                when {
-                                    horizontalDrag > 80f -> {
-                                        swipeDirection = 1
-                                        currentComic?.nextId?.let { id ->
-                                            comics?.find { it.id == id }?.let { currentComic = it }
-                                        }
-                                    }
-                                    horizontalDrag < -80f -> {
-                                        swipeDirection = -1
-                                        currentComic?.previousId?.let { id ->
-                                            comics?.find { it.id == id }?.let { currentComic = it }
-                                        }
-                                    }
-                                }
-                                horizontalDrag = 0f
-                            },
-                            onDragCancel = { horizontalDrag = 0f }
-                        )
-                    },
+                    .padding(0.dp),
                 verticalArrangement = Arrangement.Top
             ){
                 if (BuildConfig.DEBUG && AppConfig.debugMode.value) {
@@ -170,52 +149,99 @@ fun HomePage(selectedTab: (Int) -> Unit,
                     Spacer(Modifier.height(0.dp))
                 }
 
-                AnimatedContent(
-                    targetState = currentComic,
-                    transitionSpec = {
-                        val slideSpec = tween<IntOffset>(durationMillis = 300)
-                        val fadeSpec = tween<Float>(durationMillis = 300)
+                val loadedComics = comics.orEmpty()
 
-                        if (swipeDirection == 1) {
-                            (slideInHorizontally(animationSpec = slideSpec) { -it } + fadeIn(animationSpec = fadeSpec)) togetherWith
-                                    (slideOutHorizontally(animationSpec = slideSpec) { it } + fadeOut(animationSpec = fadeSpec))
-                        } else {
-                            (slideInHorizontally(animationSpec = slideSpec) { it } + fadeIn(animationSpec = fadeSpec)) togetherWith
-                                    (slideOutHorizontally(animationSpec = slideSpec) { -it } + fadeOut(animationSpec = fadeSpec))
-                        }.using(SizeTransform(clip = false))
-                    }
-                ) { comic ->
-                    comic?.let {
-                        val painter = rememberAsyncImagePainter(it.image)
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(280.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .width(12.dp)
-                                    .fillMaxHeight(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                it.nextTitle?.let { title ->
-                                    Text(
-                                        text = title
-                                            .removePrefix(AppConfig.prefix)
-                                            .trim(),
-                                        fontSize = 12.sp,
-                                        modifier = Modifier.width(10.dp)
-                                    )
+                fun liveDrag(): Modifier = Modifier.pointerInput(
+                    currentComic,
+                    loadedComics,
+                    sliderWidth
+                ) {
+                    detectHorizontalDragGestures(
+                        onDragStart = { dragOffset = 0f },
+                        onHorizontalDrag = { change, amount ->
+                            change.consume()
+                            val active = currentComic
+                            val minimum =
+                                if (active?.previousId != null) -sliderWidth else 0f
+                            val maximum =
+                                if (active?.nextId != null) sliderWidth else 0f
+                            dragOffset = (dragOffset + amount).coerceIn(minimum, maximum)
+                        },
+                        onDragEnd = {
+                            sliderScope.launch {
+                                val active = currentComic
+                                val direction = when {
+                                    dragOffset > sliderWidth * 0.15f -> 1
+                                    dragOffset < -sliderWidth * 0.15f -> -1
+                                    else -> 0
                                 }
-                            }
 
+                                val targetId = when (direction) {
+                                    1 -> active?.nextId
+                                    -1 -> active?.previousId
+                                    else -> null
+                                }
+
+                                val target = targetId?.let { id ->
+                                    loadedComics.find { it.id == id }
+                                }
+
+                                val animation = Animatable(dragOffset)
+                                animation.animateTo(
+                                    if (target == null) 0f
+                                    else direction * sliderWidth,
+                                    tween(220)
+                                ) {
+                                    dragOffset = value
+                                }
+
+                                if (target != null) currentComic = target
+                                dragOffset = 0f
+                            }
+                        },
+                        onDragCancel = {
+                            sliderScope.launch {
+                                val animation = Animatable(dragOffset)
+                                animation.animateTo(0f, tween(180)) {
+                                    dragOffset = value
+                                }
+                                dragOffset = 0f
+                            }
+                        }
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(280.dp)
+                        .onSizeChanged {
+                            if (it.width > 0) sliderWidth = it.width.toFloat()
+                        }
+                        .then(liveDrag())
+                ) {
+                    val active = currentComic
+                    val next = active?.nextId?.let { id ->
+                        loadedComics.find { it.id == id }
+                    }
+                    val previous = active?.previousId?.let { id ->
+                        loadedComics.find { it.id == id }
+                    }
+
+                    listOf(
+                        next to -sliderWidth,
+                        active to 0f,
+                        previous to sliderWidth
+                    ).forEach { (item, position) ->
+                        item?.let {
                             Image(
-                                painter = painter,
+                                painter = rememberAsyncImagePainter(it.image),
                                 contentDescription = it.title,
                                 modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxHeight()
+                                    .fillMaxSize()
+                                    .graphicsLayer {
+                                        translationX = position + dragOffset
+                                    }
                                     .clickable {
                                         clicks++
                                         AppConfig.comicClickCount.intValue = clicks
@@ -225,27 +251,9 @@ fun HomePage(selectedTab: (Int) -> Unit,
                                     },
                                 contentScale = ContentScale.Fit
                             )
-
-                            Box(
-                                modifier = Modifier
-                                    .width(12.dp)
-                                    .fillMaxHeight(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                it.previousTitle?.let { title ->
-                                    Text(
-                                        text = title
-                                            .removePrefix(AppConfig.prefix)
-                                            .trim(),
-                                        fontSize = 12.sp,
-                                        modifier = Modifier.width(10.dp)
-                                    )
-                                }
-                            }
                         }
                     }
                 }
-
 
 
                 Spacer(Modifier.height(0.dp))
@@ -312,6 +320,59 @@ fun HomePage(selectedTab: (Int) -> Unit,
                                 context.startActivity(Intent.createChooser(shareIntent, "Поділитися через"))
                             }
                     )
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .then(liveDrag())
+                ) {
+                    val active = currentComic
+
+                    val next = active?.nextId?.let { id ->
+                        loadedComics.find { it.id == id }
+                    }
+                    val previous = active?.previousId?.let { id ->
+                        loadedComics.find { it.id == id }
+                    }
+
+                    val nextNext = next?.nextId?.let { id ->
+                        loadedComics.find { it.id == id }
+                    }
+                    val previousPrevious = previous?.previousId?.let { id ->
+                        loadedComics.find { it.id == id }
+                    }
+
+                    val halfWidth = sliderWidth / 2f
+
+                    listOf(
+                        nextNext to -halfWidth,
+                        next to 0f,
+                        previous to halfWidth,
+                        previousPrevious to sliderWidth
+                    ).forEach { (item, position) ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(with(LocalDensity.current) {
+                                    halfWidth.toDp()
+                                })
+                                .graphicsLayer {
+                                    translationX = position + dragOffset / 2f
+                                }
+                                .padding(4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            item?.let {
+                                Image(
+                                    painter = rememberAsyncImagePainter(it.image),
+                                    contentDescription = it.title,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Fit
+                                )
+                            }
+                        }
+                    }
                 }
 
                 /*Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
