@@ -363,14 +363,28 @@ fun HomePage(selectedTab: (Int) -> Unit,
                                 .padding(4.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            item?.let {
-                                Image(
-                                    painter = rememberAsyncImagePainter(it.image),
-                                    contentDescription = it.title,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Fit
-                                )
-                            }
+                            if (item != null) {
+                                    Image(
+                                        painter = rememberAsyncImagePainter(item.image),
+                                        contentDescription = item.title,
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Fit
+                                    )
+                                } else {
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.Center
+                                    ) {
+                                        Text(
+                                            text = "Гортайте комікси свайпом",
+                                            textAlign = TextAlign.Center
+                                        )
+                                        Text(
+                                            text = "← Проведіть пальцем",
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                }
                         }
                     }
                 }
