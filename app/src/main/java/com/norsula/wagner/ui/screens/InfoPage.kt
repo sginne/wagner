@@ -19,7 +19,10 @@ import androidx.compose.ui.viewinterop.AndroidView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InfoPage(modifier: Modifier = Modifier) {
+fun InfoPage(
+    modifier: Modifier = Modifier,
+    onBack: () -> Unit = {}
+) {
     val (wagnerInfo, setWagnerInfo) = remember { mutableStateOf<String?>(null) }
     val (isLoading, setIsLoading) = remember { mutableStateOf(true) }
     val (error, setError) = remember { mutableStateOf<String?>(null) }
@@ -43,7 +46,7 @@ fun InfoPage(modifier: Modifier = Modifier) {
             TopAppBar(
                 title = { Text("App Information") },
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle back navigation */ }) {
+                    IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"

@@ -24,17 +24,23 @@ class ComicCheckWorker(
             LogUtil.debug("Loaded lastCheckedNum from prefs: ${prefs.getInt("lastCheckedNum", -1)}")
 
             val comics = fetchComicsWithCache(applicationContext)
-            val isNewComic = checkForNewComic(comics)
+            val latestComic = comics.maxByOrNull { it.num ?: 0 }
 
-            if (isNewComic) {
-                val latestComic = comics.maxByOrNull { it.num ?: 0 }
-                latestComic?.let { comic ->
-                    NotificationHelper.showNewComicNotification(applicationContext, comic)
-                    comic.num?.let { num ->
-                        AppConfig.lastCheckedNum.intValue = num
-                        AppConfig.save(applicationContext)
-                        LogUtil.debug("Updated lastCheckedNum to $num and saved")
-                    }
+            latestComic?.num?.let { latestNum ->
+                val lastSaved = AppConfig.lastCheckedNum.intValue
+
+                if (lastSaved < 0) {
+                    AppConfig.lastCheckedNum.intValue = latestNum
+                    AppConfig.save(applicationContext)
+                    LogUtil.debug("Initialized lastCheckedNum to $latestNum")
+                } else if (latestNum > lastSaved) {
+                    NotificationHelper.showNewComicNotification(
+                        applicationContext,
+                        latestComic
+                    )
+                    AppConfig.lastCheckedNum.intValue = latestNum
+                    AppConfig.save(applicationContext)
+                    LogUtil.debug("Updated lastCheckedNum to $latestNum")
                 }
             }
 

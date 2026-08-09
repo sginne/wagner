@@ -1,8 +1,10 @@
 package com.norsula.wagner
 
 import android.os.Bundle
+import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.mutableStateOf
 import androidx.activity.enableEdgeToEdge
 import com.norsula.wagner.ui.MainScreen
 import com.norsula.wagner.theme.WagnerTheme
@@ -17,6 +19,7 @@ import androidx.core.app.ActivityCompat
 
 
 class MainActivity : ComponentActivity() {
+    private val notificationComicId = mutableStateOf<String?>(null)
     override fun onCreate(savedInstanceState: Bundle?) {
         //println("App started")
         super.onCreate(savedInstanceState)
@@ -32,16 +35,25 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        notificationComicId.value = intent.getStringExtra(
+            NotificationHelper.EXTRA_COMIC_ID
+        )
+
         enableEdgeToEdge()
 
         setContent {
             WagnerTheme {
                 MainScreen(
-                    initialComicId = intent.getStringExtra(
-                        NotificationHelper.EXTRA_COMIC_ID
-                    )
+                    initialComicId = notificationComicId.value
                 )
             }
         }
+    }
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        notificationComicId.value = intent.getStringExtra(
+            NotificationHelper.EXTRA_COMIC_ID
+        )
     }
 }

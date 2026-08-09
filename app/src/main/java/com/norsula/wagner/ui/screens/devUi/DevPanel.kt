@@ -28,6 +28,9 @@ import kotlinx.coroutines.withContext
 import com.norsula.wagner.AppConfig
 import com.norsula.wagner.notification.NotificationHelper
 import com.norsula.wagner.model.Comic
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import com.norsula.wagner.worker.ComicCheckWorker
 
 
 
@@ -127,19 +130,36 @@ fun DevPanel(comics: List<Comic>) {
             }) {
                 Text("Оновити")
             }
-            Button(
-                enabled = comics.isNotEmpty(),
-                onClick = {
-                    comics.firstOrNull()?.let { comic ->
-                        scope.launch {
-                            NotificationHelper.showNewComicNotification(context, comic)
+            comics
+                .sortedByDescending { it.num ?: -1 }
+                .take(3)
+                .forEach { comic ->
+                    Button(
+                        onClick = {
+                            scope.launch {
+                                NotificationHelper.showNewComicNotification(
+                                    context,
+                                    comic
+                                )
+                            }
                         }
+                    ) {
+                        Text("Тест №${comic.num ?: "?"}")
                     }
                 }
-            ) {
-                Text("Тест сповіщення")
-            }
 
+        }
+
+        Button(
+            onClick = {
+                AppConfig.lastCheckedNum.intValue = -1
+                AppConfig.save(context)
+                WorkManager.getInstance(context).enqueue(
+                    OneTimeWorkRequestBuilder<ComicCheckWorker>().build()
+                )
+            }
+        ) {
+            Text("Тест першої перевірки")
         }
     }
 

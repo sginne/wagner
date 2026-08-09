@@ -48,6 +48,13 @@ fun MainScreen(initialComicId: String? = null) {
 
     var selectedComicId by remember { mutableStateOf(initialComicId) }
 
+    androidx.compose.runtime.LaunchedEffect(initialComicId) {
+        if (initialComicId != null) {
+            selectedComicId = initialComicId
+            selectedTab = 0
+        }
+    }
+
     val navigateToHomePageWithComicId = remember {
         { id: String ->
             selectedComicId = id
@@ -102,7 +109,10 @@ fun MainScreen(initialComicId: String? = null) {
                         )
                     }
                 ) { padding ->
-                    InfoPage(modifier = Modifier.padding(padding))
+                    InfoPage(
+                        modifier = Modifier.padding(padding),
+                        onBack = { selectedTab = 0 }
+                    )
                 }
 
             }

@@ -77,6 +77,7 @@ fun HomePage(selectedTab: (Int) -> Unit,
         )
     }
     var error by remember { mutableStateOf<String?>(null) }
+    var reloadKey by remember { mutableIntStateOf(0) }
     val context = LocalContext.current
     var clicks by remember { mutableIntStateOf(AppConfig.comicClickCount.intValue) }
     //var debugMode = remember { mutableStateOf(true) } // в AppConfig
@@ -86,9 +87,10 @@ fun HomePage(selectedTab: (Int) -> Unit,
 
 
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(reloadKey) {
         if (comics != null) return@LaunchedEffect
 
+        error = null
         try {
             val loadedComics = fetchComicsWithCache(context)
             onComicsLoaded(loadedComics) // виклик callback, передаємо список коміксів в MainScreen
@@ -126,8 +128,18 @@ fun HomePage(selectedTab: (Int) -> Unit,
             }
         }
         error != null -> {
-            Box(Modifier.fillMaxSize(), Alignment.Center) {
-                Text(error ?: "Невідома помилка")
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    error ?: "Невідома помилка",
+                    textAlign = TextAlign.Center
+                )
+                TextButton(onClick = { reloadKey++ }) {
+                    Text("Повторити")
+                }
             }
         }
         comics.isNullOrEmpty() -> {
