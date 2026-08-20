@@ -53,6 +53,8 @@ import kotlinx.coroutines.launch
 //import java.time.format.DateTimeFormatter
 import com.norsula.wagner.ui.screens.devUi.DevPanel
 import com.norsula.wagner.AppConfig
+import com.norsula.wagner.ui.components.SiteActionsStrip
+import com.norsula.wagner.ui.components.UtilityActionsStrip
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -269,120 +271,24 @@ fun HomePage(selectedTab: (Int) -> Unit,
 
 
                 Spacer(Modifier.height(0.dp))
-                androidx.compose.material3.Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 6.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(
-                            horizontal = 12.dp,
-                            vertical = 8.dp
-                        ),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = comic.title,
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontFamily = androidx.compose.ui.text.font.FontFamily.Default,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            textAlign = TextAlign.Center
-                        )
-
-                        val formattedDate =
-                            comic.publishedDate?.let { formatDate(it) } ?: "невідомо"
-
-                        Text(
-                            text = "переклад від $formattedDate",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontFamily = androidx.compose.ui.text.font.FontFamily.Default
-                            ),
-                            textAlign = TextAlign.Center
-                        )
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 4.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            TextButton(
-                                onClick = {
-                                    context.startActivity(
-                                        Intent(
-                                            Intent.ACTION_VIEW,
-                                            Uri.parse("https://norsula.com/${comic.id}")
-                                        )
-                                    )
-                                }
-                            ) {
-                                Text(
-                                    text = "Переглянути на сайті",
-                                    fontFamily =
-                                        androidx.compose.ui.text.font.FontFamily.Default
-                                )
-                            }
-
-                            val comicsSnapshot = comics
-                            val currentComicSnapshot = currentComic
-
-                            if (
-                                AppConfig.debugMode.value &&
-                                comicsSnapshot != null &&
-                                currentComicSnapshot != null
-                            ) {
-                                val position = comicsSnapshot
-                                    .indexOfFirst {
-                                        it.id == currentComicSnapshot.id
-                                    }
-                                    .takeIf { it >= 0 }
-                                    ?.let { comicsSnapshot.size - it }
-                                    ?: "?"
-
-                                Text(
-                                    text = "$position з ${comicsSnapshot.size}",
-                                    style = MaterialTheme.typography.bodySmall.copy(
-                                        fontFamily =
-                                            androidx.compose.ui.text.font.FontFamily.Default
-                                    )
-                                )
-                            }
-
-                            TextButton(
-                                onClick = {
-                                    val shareIntent =
-                                        Intent(Intent.ACTION_SEND).apply {
-                                            type = "text/plain"
-                                            putExtra(
-                                                Intent.EXTRA_SUBJECT,
-                                                comic.title
-                                            )
-                                            putExtra(
-                                                Intent.EXTRA_TEXT,
-                                                "Подивись цей комікс: ${comic.title}\n" +
-                                                    "https://norsula.com/${comic.id}"
-                                            )
-                                        }
-
-                                    context.startActivity(
-                                        Intent.createChooser(
-                                            shareIntent,
-                                            "Поділитися через"
-                                        )
-                                    )
-                                }
-                            ) {
-                                Text(
-                                    text = "Поділитися",
-                                    fontFamily =
-                                        androidx.compose.ui.text.font.FontFamily.Default
-                                )
-                            }
-                        }
+                val debugPositionText =
+                    if (AppConfig.debugMode.value) {
+                        val snapshot = comics.orEmpty()
+                        val index = snapshot.indexOfFirst { it.id == comic.id }
+                        val position = index
+                            .takeIf { it >= 0 }
+                            ?.let { snapshot.size - it }
+                            ?: "?"
+                        "$position з ${snapshot.size}"
+                    } else {
+                        null
                     }
-                }
+
+                SiteActionsStrip(
+                    comic = comic,
+                    debugPositionText = debugPositionText
+                )
+
 
                 Box(
                     modifier = Modifier
@@ -484,33 +390,11 @@ fun HomePage(selectedTab: (Int) -> Unit,
                         }
                     }
                 }*/
-                androidx.compose.material3.Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 6.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        TextButton(onClick = { selectedTab(1) }) {
-                            Text(
-                                text = "Пошук",
-                                fontFamily =
-                                    androidx.compose.ui.text.font.FontFamily.Default
-                            )
-                        }
-                        TextButton(onClick = { selectedTab(2) }) {
-                            Text(
-                                text = "Інфо",
-                                fontFamily =
-                                    androidx.compose.ui.text.font.FontFamily.Default
-                            )
-                        }
-                    }
-                }
+                UtilityActionsStrip(
+                    onSearch = { selectedTab(1) },
+                    onInfo = { selectedTab(2) }
+                )
+
             }
         }
     }

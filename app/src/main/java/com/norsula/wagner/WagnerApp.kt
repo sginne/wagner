@@ -1,6 +1,7 @@
 package com.norsula.wagner
 
 import android.app.Application
+import com.google.android.gms.ads.MobileAds
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit
 class WagnerApp : Application() {
     override fun onCreate() {
         super.onCreate()
+        MobileAds.initialize(this) {}
         setupComicCheckWorker()
     }
 
