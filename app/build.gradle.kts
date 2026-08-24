@@ -38,8 +38,8 @@ android {
         applicationId = "com.norsula.wagner"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.0.1"
+        versionCode = 5
+        versionName = "1.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -74,8 +74,9 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.coil.compose)
     implementation("com.google.android.gms:play-services-ads:25.4.0")
+    implementation("com.google.android.ump:user-messaging-platform:4.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${libs.versions.kotlinSerialization.get()}")
-    implementation ("androidx.work:work-runtime-ktx:2.9.0")
+    implementation ("androidx.work:work-runtime:2.11.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)

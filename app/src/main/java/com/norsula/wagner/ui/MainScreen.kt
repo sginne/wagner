@@ -100,7 +100,7 @@ fun MainScreen(initialComicId: String? = null) {
                 2 -> Scaffold(
                     topBar = {
                         TopAppBar(
-                            title = { Text("Info") },
+                            title = { Text("Інформація") },
                             navigationIcon = {
                                 IconButton(onClick = { selectedTab = 0 }) {
                                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
